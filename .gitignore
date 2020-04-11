@@ -89,4 +89,7 @@ local_settings.py
 db.sqlite3
 
 ### Mypy ###
-*.mypy
+.mypy_cache/
+
+### vscode ###
+.vscode/
