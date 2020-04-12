@@ -1,3 +1,11 @@
 from django.test import TestCase
+from django.contrib.auth.models import User
 
-# Create your tests here.
+class UserTestCase(TestCase):
+    def setUp(self):
+        User.objects.create(username='test_user')
+
+
+    def test_user_creation(self):
+        user = User.objects.get(username='test_user')
+        self.assertEqual(user.username,'test_user')
