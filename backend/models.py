@@ -36,10 +36,11 @@ class Game(models.Model):
     status = models.CharField(default='P', max_length=1)
 
     def check_end_of_game(self):
-        if self.cell_set.filter(color='R').count() == self.cell_set.filter(color='R', found=True).count():
-            status = 'R'
-        if self.cell_set.filter(color='B').count() == self.cell_set.filter(color='B', found=True).count():
-            status = 'R'
+
+        for color in TEAM_COLORS:
+            if self.cell_set.filter(color=color[0]).count() == self.cell_set.filter(color=color[0], found=True).count():
+                status = color[0]
+        self.save()
 
 
 class Team(models.Model):
@@ -47,7 +48,7 @@ class Team(models.Model):
     Represent a team in the game. there either one or two teams 
     """
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
-    leader = models.OneToOneField('Player')
+    leader = models.OneToOneField('Player', on_delete=models.CASCADE, related_name='leader')
     color = models.CharField(default='R', max_length=1, choices=TEAM_COLORS)
 
 
@@ -58,7 +59,7 @@ class Player(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
-    cell = models.ForeignKey('Cell', on_delete=models.CASCADE)
+    cell = models.ForeignKey('Cell', on_delete=models.CASCADE, null=True)
 
 class Round(models.Model):
     """ 
