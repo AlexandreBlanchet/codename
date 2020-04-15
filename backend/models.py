@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import random, datetime
+from django.db.models import Q
 
 TEAM_COLORS = (
     ('R', 'Red'),
     ('B', 'Blue'),
 )
+BOARD_SIZE = 5
 
 class Word(models.Model):
     """ 
@@ -19,21 +21,22 @@ class Cell(models.Model):
     This will be the cell list for a specific game, each cell will have coordinate and a specific word 
     The color parameter is here to know if the cell is for a team or another team or neutral 
     the parameter found allow us to know is the cell has been found by the players and should be hidden 
+    no need to have cell position we don't care where they because we've only one grid and team leaders can see on the grid the color of the cell
+    it doesn't need to be rectangular as well, so responsive
     """
 
-    x = models.IntegerField()
-    y = models.IntegerField()
     word = models.ForeignKey('Word', on_delete=models.CASCADE)
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
     color = models.CharField(default='N', max_length=1)
     found = models.BooleanField(default=False)
-
 
 class Game(models.Model):
     """
     Describe any game and its parameters 
     """
     status = models.CharField(default='P', max_length=1)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_active = models.DateTimeField(auto_now=True)
 
     def check_end_of_game(self):
 
@@ -41,6 +44,25 @@ class Game(models.Model):
             if self.cell_set.filter(color=color[0]).count() == self.cell_set.filter(color=color[0], found=True).count():
                 status = color[0]
         self.save()
+
+    def start(self):
+        words = list(Word.objects.all())
+        random.shuffle(words)
+        teams = ['N']*10 + ['R']*8 + ['B']*8
+        random.shuffle(teams)
+        for i in range(BOARD_SIZE**2):
+                Cell.objects.create(game=self, color=teams[i], word=words[i])
+        # Creating first round with no 
+        team1 = Team.objects.create(game=self, color='R')
+        team1.leader = self.player_set.all()[0]
+        team1.save()
+        if self.player_set.count() > 3:
+            Team.objects.create(game=self, color='B')
+        Round.objects.create(game=self, team=team1)
+
+    def get_last_round(self):
+        rounds = self.round_set.all()
+        return rounds[rounds.count()-1]
 
 
 class Team(models.Model):
@@ -58,7 +80,8 @@ class Player(models.Model):
     the cell attribute is the cell that a player has selected
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    team = models.ForeignKey('Team', on_delete=models.CASCADE)
+    game = models.ForeignKey('Game', on_delete=models.CASCADE)
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, null=True)
     cell = models.ForeignKey('Cell', on_delete=models.CASCADE, null=True)
 
 class Round(models.Model):
