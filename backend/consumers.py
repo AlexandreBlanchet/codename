@@ -17,22 +17,17 @@ from djangochannelsrestframework.mixins import (
     DeleteModelMixin,
 )
 
-class UserConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
-    queryset = User.objects.all()
-    serializer_class = serializers.UserSerializer
-    permission_classes = (permissions.IsAuthenticated,) 
-
 class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Game.objects.all()
     serializer_class = serializers.GameSerializer
     permission_classes = (permissions.IsAuthenticated,) 
 
     @action()
-    async def update_status(self, pk=None, status=None, **kwargs):
+    async def add_player(self, pk=None, **kwargs):
         game = await database_sync_to_async(self.get_object)(pk=pk)
-        game.status = status
-        await database_sync_to_async(game.save)()
-        return {"pk": pk}, 200
+        user = self.scope['user']
+        player = await database_sync_to_async(Player.objects.create)(game=game, user=user)
+        return {"pk": player.pk}, 200
 
     @action()
     async def start_game(self, pk=None, **kwargs):
@@ -40,9 +35,18 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         await database_sync_to_async(game.start)()
         return {"pk": pk}, 200
 
+    async def send_json(self, message):
+        if message['data'] and message['data']['cells']:
+            for cell in message['data']['cells']:
+                if not cell['found']:
+                    cell['color'] = 'W'
+        await super().send_json(message)
+
+
+
 class RoundConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Round.objects.all()
-    serializer_class = serializers.Roundserialize
+    serializer_class = serializers.RoundSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     @action()

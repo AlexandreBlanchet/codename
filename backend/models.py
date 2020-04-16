@@ -23,10 +23,11 @@ class Cell(models.Model):
     the parameter found allow us to know is the cell has been found by the players and should be hidden 
     no need to have cell position we don't care where they because we've only one grid and team leaders can see on the grid the color of the cell
     it doesn't need to be rectangular as well, so responsive
+    As the word object has only one property it's not necessary to have the link to the word, we get the word instead in a charfield
     """
 
-    word = models.ForeignKey('Word', on_delete=models.CASCADE)
-    game = models.ForeignKey('Game', on_delete=models.CASCADE)
+    word = models.CharField(max_length=50)
+    game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='cells')
     color = models.CharField(default='N', max_length=1)
     found = models.BooleanField(default=False)
 
@@ -46,19 +47,22 @@ class Game(models.Model):
         self.save()
 
     def start(self):
+        if self.status != 'P':
+            return
+        self.status = 'S'
+        self.save()
         words = list(Word.objects.all())
         random.shuffle(words)
         teams = ['N']*10 + ['R']*8 + ['B']*8
         random.shuffle(teams)
         for i in range(BOARD_SIZE**2):
-                Cell.objects.create(game=self, color=teams[i], word=words[i])
-        # Creating first round with no 
-        team1 = Team.objects.create(game=self, color='R')
-        team1.leader = self.player_set.all()[0]
-        team1.save()
+                Cell.objects.create(game=self, color=teams[i], word=words[i].word)
+        # Creating first round with no data
+        team1 = Team.objects.create(game=self, color='R', leader=self.player_set.all()[0])
         if self.player_set.count() > 3:
             Team.objects.create(game=self, color='B')
         Round.objects.create(game=self, team=team1)
+        
 
     def get_last_round(self):
         rounds = self.round_set.all()
@@ -70,7 +74,7 @@ class Team(models.Model):
     Represent a team in the game. there either one or two teams 
     """
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
-    leader = models.OneToOneField('Player', on_delete=models.CASCADE, related_name='leader')
+    leader = models.OneToOneField('Player', on_delete=models.CASCADE, related_name='leader_team')
     color = models.CharField(default='R', max_length=1, choices=TEAM_COLORS)
 
 
@@ -80,9 +84,12 @@ class Player(models.Model):
     the cell attribute is the cell that a player has selected
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    game = models.ForeignKey('Game', on_delete=models.CASCADE)
-    team = models.ForeignKey('Team', on_delete=models.CASCADE, null=True)
+    game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='players')
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, null=True, related_name='players')
     cell = models.ForeignKey('Cell', on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        unique_together = ('user', 'game',)
 
 class Round(models.Model):
     """ 

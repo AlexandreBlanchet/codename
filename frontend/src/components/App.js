@@ -4,33 +4,50 @@ import Container from '@material-ui/core/Container';
 import Game from "./Game";
 import GameAppBar from "./GameAppBar";
 import Lobby from "./Lobby";
+import Home from "./Home";
+import Login from "./Login";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect,
+  useHistory,
+  useLocation
+} from "react-router-dom";
 
 class App extends Component {
+  
   state = {
       gameId: null,
       loaded: false,
-      placeholder: "Loading"
+      placeholder: "Loading", 
+      userId: JSON.parse(document.getElementById('user_id').textContent),
     };
   
-  handleGameSelect = gameId => {
-      this.setState({gameId: gameId});
-
-  }
-
-
   render() {
     return (
-        <>
-        <GameAppBar />
-        <Container maxWidth="sm">
-            {this.state.gameId == null ? (
-                <Lobby handleGameSelect={this.handleGameSelect} />
-            ) : (
-                <Game gameId={this.state.gameId}/>
-            )}
-            
-        </Container>   
-        </>
+      <Router basename="/codename" >
+        <div>
+          <GameAppBar />
+          <Container maxWidth="sm">
+            <Switch>
+              <Route path="/" exact >
+                <Home/>
+              </Route>
+              <Route path="/login" >
+                <Login/>
+              </Route>
+              <Route path="/lobby">
+                <Lobby/>
+              </Route>
+              <Route path="/game/:id">
+                <Game userId={this.state.userId} />
+              </Route>
+            </Switch>
+          </Container>
+        </div>   
+      </Router>
     );
   }
 }

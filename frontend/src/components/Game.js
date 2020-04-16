@@ -1,70 +1,64 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import GameGrid from "./Grid";
 import RoundForm from "./RoundForm";
 import GameParams from "./GameParams";
-
+import {useParams} from "react-router-dom";
 const URL = 'ws://localhost:8000/ws/game'
 
 
-class Game extends Component {
+const Game = props => {
 
-    state = {
-        game: {status: 'P', cell_set: []}
-    }
+    const [game, setGame] = useState({status: 'P', cells: [], player_set: []})
+    const [ws, setWs] = useState(new WebSocket(URL))
 
-    ws = new WebSocket(URL)
+    let { id } = useParams();
 
-    componentDidMount() {
-        this.ws.onopen = () => {
+    ws.onopen = () => {
             // on connecting, do nothing but log it to the console
             console.log('connected')
-            //{"action": "retrieve", "pk": 1, "request_id": 1}
-            this.ws.send(JSON.stringify({"action": "retrieve", "pk": this.props.gameId, "request_id": 1}))
+            
+            ws.send(JSON.stringify({"action": "subscribe_instance", "pk": id, "request_id": 4}))
+            ws.send(JSON.stringify({"action": "retrieve", "pk": id, "request_id": 1}))
+           
         }
 
-        this.ws.onmessage = evt => {
+    ws.onmessage = evt => {
             // on receiving a message, add it to the list of messages
             const message = JSON.parse(evt.data);
             console.log(message)
             if( message.action === 'retrieve') {
-                this.setState({ game: message.data });
+                setGame(message.data);
+                // TODO to be modified when we choose a game and we're not currently in it, we add our user to the player list of the game
+                if(message.data.players.filter(player => player.user == props.userId).length == 0){
+                    ws.send(JSON.stringify({'action': 'add_player', 'pk': id, "request_id": 2}))
+                }
+            }
+            if( message.action === 'update') {
+                setGame(message.data);
             }
         }
 
-        this.ws.onclose = () => {
+    ws.onclose = () => {
             console.log('disconnected')
             // automatically try to reconnect on connection loss
-            this.setState({
-            ws: new WebSocket(URL),
-            })
+            setWs(new WebSocket(URL));
         }
-    }
+    
 
-    componentWillUnmount() {
-        this.ws.close();
-    }
-
-    createRound = (word, numberOfCells) => {
-        this.ws.send(JSON.stringify(message));
-
-    }
-
-    handleStart = () => {
-        const message = {"action": "start_game", "pk": this.props.gameId, "request_id": 2};
-        this.ws.send(JSON.stringify(message))
+    const handleStart = () => {
+        const message = {"action": "start_game", "pk": props.gameId, "request_id": 2};
+        ws.send(JSON.stringify(message))
     }
     
-    render() {
-        return (
+    return (
         <div className="game">
-            <GameParams handleStart={this.handleStart} />
+            <GameParams handleStart={handleStart} />
             <RoundForm />
-            <GameGrid cells={this.state.game.cell_set} />
-        {this.state.gameStatus}
+            <GameGrid cells={game.cells} />
        </div>
-        )
-    }
+        );
 
-}
+
+};
 
 export default Game;

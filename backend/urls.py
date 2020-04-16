@@ -1,17 +1,17 @@
-from django.urls import include, path
+from django.urls import include
+from django.conf.urls import url
 from rest_framework import routers
-from . import views
+from . import api
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-router.register(r'players', views.PlayerViewSet)
-router.register(r'games', views.GameViewSet)
-router.register(r'rounds', views.RoundViewSet)
+router.register(r'players', api.PlayerViewSet)
+router.register(r'games', api.GameViewSet)
+router.register(r'rounds', api.RoundViewSet)
+
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'', include(router.urls)),
+    url(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

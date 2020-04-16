@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -6,69 +6,56 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import ImageIcon from '@material-ui/icons/Image';
-import WorkIcon from '@material-ui/icons/Work';
-import BeachAccessIcon from '@material-ui/icons/BeachAccess';
-
+import {Link} from "react-router-dom";
 const URL = 'ws://localhost:8000/ws/games'
 
-class Lobby extends Component {
+const Lobby = props => {
 
-    state = {
-        games: []
+    const [games, setGames] = useState([])
+    const [ws,setWs] = useState(new WebSocket(URL))
+
+    ws.onopen = () => {
+        // on connecting, do nothing but log it to the console
+        console.log('connected')
+        ws.send(JSON.stringify({"action": "list", "request_id": 1}))
     }
 
-    ws = new WebSocket(URL)
-
-    componentDidMount() {
-        this.ws.onopen = () => {
-            // on connecting, do nothing but log it to the console
-            console.log('connected')
-            this.ws.send(JSON.stringify({"action": "list", "request_id": 1}))
+    ws.onmessage = evt => {
+        // on receiving a message, add it to the list of messages
+        const message = JSON.parse(evt.data);
+        console.log(message)
+        if( message.action === 'list') {
+            setGames(message.data);
         }
-
-        this.ws.onmessage = evt => {
-            // on receiving a message, add it to the list of messages
-            const message = JSON.parse(evt.data);
-            console.log(message)
-            if( message.action === 'list') {
-                this.setState({ games: message.data });
-            }
-            if( message.action === 'create') {
-                this.setState({ games: [{pk:message.pk, status:'P'}, ...this.state.games]})
-            }
-        }
-
-        this.ws.onclose = () => {
-            console.log('disconnected')
-            // automatically try to reconnect on connection loss
-            this.setState({
-            ws: new WebSocket(URL),
-            })
+        if( message.action === 'create') {
+            setGames([{pk:message.pk, status:'P'}, ...games]);
         }
     }
 
-    componentWillUnmount() {
-        this.ws.close();
+    ws.onclose = () => {
+        console.log('disconnected')
+        // automatically try to reconnect on connection loss
+        setWs(new WebSocket(URL));
     }
 
-    render() {
-        return (
-            <List className="Lobby">{
-                this.state.games.map( value => (
-                     <ListItem key={value.pk} button onClick={() => this.props.handleGameSelect(value.pk)}>
-                     <ListItemAvatar>
-                       <Avatar>
-                         <ImageIcon />
-                       </Avatar>
-                     </ListItemAvatar>
-                     <ListItemText primary={value.status} secondary="Jan 9, 2014" />
-                   </ListItem>
+    return (
+        <List className="Lobby">{
+            games.map( value => (
+                <Link  key={value.pk}   style={{textDecoration: 'none'}} to={'/game/' + value.pk}>
+                    <ListItem >
+                    <ListItemAvatar>
+                    <Avatar>
+                        <ImageIcon />
+                    </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={value.status} secondary="Jan 9, 2014" />
+                    </ListItem>
+                </Link>
 
-                ))
-            }   
-          </List>
-        )
-    }
+            ))
+        }   
+        </List>
+    );
 
 }
 

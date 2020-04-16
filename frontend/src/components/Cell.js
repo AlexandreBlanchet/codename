@@ -24,7 +24,7 @@ export default function GameCell(props) {
     <Button 
         className={classes.button} 
         style={{backgroundColor: colors[props.cell.color]}}>
-            {props.cell.word.word}
+            {props.cell.word}
     </Button>
   );
 }
