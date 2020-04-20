@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'frontend',
     'channels',
     'rest_framework',
+    'authentication',
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +80,9 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10

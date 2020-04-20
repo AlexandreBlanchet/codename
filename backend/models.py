@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-import random, datetime
+import random
+import datetime
 from django.db.models import Q
 
 TEAM_COLORS = (
@@ -8,6 +9,7 @@ TEAM_COLORS = (
     ('B', 'Blue'),
 )
 BOARD_SIZE = 5
+
 
 class Word(models.Model):
     """ 
@@ -27,9 +29,11 @@ class Cell(models.Model):
     """
 
     word = models.CharField(max_length=50)
-    game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='cells')
+    game = models.ForeignKey(
+        'Game', on_delete=models.CASCADE, related_name='cells')
     color = models.CharField(default='N', max_length=1)
     found = models.BooleanField(default=False)
+
 
 class Game(models.Model):
     """
@@ -56,13 +60,13 @@ class Game(models.Model):
         teams = ['N']*10 + ['R']*8 + ['B']*8
         random.shuffle(teams)
         for i in range(BOARD_SIZE**2):
-                Cell.objects.create(game=self, color=teams[i], word=words[i].word)
+            Cell.objects.create(game=self, color=teams[i], word=words[i].word)
         # Creating first round with no data
-        team1 = Team.objects.create(game=self, color='R', leader=self.player_set.all()[0])
+        team1 = Team.objects.create(
+            game=self, color='R', leader=self.player_set.all()[0])
         if self.player_set.count() > 3:
             Team.objects.create(game=self, color='B')
         Round.objects.create(game=self, team=team1)
-        
 
     def get_last_round(self):
         rounds = self.round_set.all()
@@ -74,7 +78,8 @@ class Team(models.Model):
     Represent a team in the game. there either one or two teams 
     """
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
-    leader = models.OneToOneField('Player', on_delete=models.CASCADE, related_name='leader_team')
+    leader = models.OneToOneField(
+        'Player', on_delete=models.CASCADE, related_name='leader_team')
     color = models.CharField(default='R', max_length=1, choices=TEAM_COLORS)
 
 
@@ -84,12 +89,15 @@ class Player(models.Model):
     the cell attribute is the cell that a player has selected
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='players')
-    team = models.ForeignKey('Team', on_delete=models.CASCADE, null=True, related_name='players')
+    game = models.ForeignKey(
+        'Game', on_delete=models.CASCADE, related_name='players')
+    team = models.ForeignKey(
+        'Team', on_delete=models.CASCADE, null=True, related_name='players')
     cell = models.ForeignKey('Cell', on_delete=models.CASCADE, null=True)
 
     class Meta:
         unique_together = ('user', 'game',)
+
 
 class Round(models.Model):
     """ 
@@ -105,7 +113,7 @@ class Round(models.Model):
     number_of_cells = models.IntegerField(default=1)
     found = models.ManyToManyField('Cell')
 
-    def submit_cell_choice(self) :
+    def submit_cell_choice(self):
         team = self.team
         chosen_cell = None
         for player in team.player_set.all():
@@ -130,6 +138,3 @@ class Round(models.Model):
             else:
                 status = 'N'
             self.save()
-                
-                
-

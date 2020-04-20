@@ -17,10 +17,11 @@ from djangochannelsrestframework.mixins import (
     DeleteModelMixin,
 )
 
+
 class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Game.objects.all()
     serializer_class = serializers.GameSerializer
-    permission_classes = (permissions.IsAuthenticated,) 
+    permission_classes = (permissions.IsAuthenticated,)
 
     @action()
     async def add_player(self, pk=None, **kwargs):
@@ -43,7 +44,6 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         await super().send_json(message)
 
 
-
 class RoundConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Round.objects.all()
     serializer_class = serializers.RoundSerializer
@@ -54,6 +54,8 @@ class RoundConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         game = await database_sync_to_async(Game.objects.all())(pk=game_id)
 
 # TODO filter only game that has been updated today
+
+
 class GamesConsumer(ListModelMixin, GenericAsyncAPIConsumer):
     queryset = Game.objects.all()
     serializer_class = serializers.GamesSerializer

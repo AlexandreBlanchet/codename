@@ -1,6 +1,6 @@
 import React, { Component, setState } from "react";
 import { render } from "react-dom";
-import Container from '@material-ui/core/Container';
+import Container from "@material-ui/core/Container";
 import Game from "./Game";
 import GameAppBar from "./GameAppBar";
 import Lobby from "./Lobby";
@@ -13,40 +13,39 @@ import {
   Link,
   Redirect,
   useHistory,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 
 class App extends Component {
-  
   state = {
-      gameId: null,
-      loaded: false,
-      placeholder: "Loading", 
-      userId: JSON.parse(document.getElementById('user_id').textContent),
-    };
-  
+    gameId: null,
+    loaded: false,
+    placeholder: "Loading",
+    userId: JSON.parse(document.getElementById("user_id").textContent),
+  };
+
   render() {
     return (
-      <Router basename="/codename" >
+      <Router basename="/codename">
         <div>
           <GameAppBar />
           <Container maxWidth="sm">
             <Switch>
-              <Route path="/" exact >
-                <Home/>
+              <Route path="/" exact>
+                <Home />
               </Route>
-              <Route path="/login" >
-                <Login/>
+              <Route path="/login">
+                <Login />
               </Route>
               <Route path="/lobby">
-                <Lobby/>
+                <Lobby />
               </Route>
               <Route path="/game/:id">
                 <Game userId={this.state.userId} />
               </Route>
             </Switch>
           </Container>
-        </div>   
+        </div>
       </Router>
     );
   }
