@@ -1,11 +1,17 @@
 import React, { Component, setState } from "react";
 import { render } from "react-dom";
 import Container from "@material-ui/core/Container";
-import Game from "./Game";
+import Game from "./game/Game";
 import GameAppBar from "./GameAppBar";
 import Lobby from "./Lobby";
 import Home from "./Home";
-import Login from "./Login";
+import Login from "./authentication/Login";
+import Register from "./authentication/Register";
+
+import { Provider } from "react-redux";
+import store from "../stores/configureStore";
+import { loadUser } from "./../actions/auth";
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,30 +29,38 @@ class App extends Component {
     placeholder: "Loading",
     userId: JSON.parse(document.getElementById("user_id").textContent),
   };
+  componentDidMount() {
+    store.dispatch(loadUser());
+  }
 
   render() {
     return (
-      <Router basename="/codename">
-        <div>
-          <GameAppBar />
-          <Container maxWidth="sm">
-            <Switch>
-              <Route path="/" exact>
-                <Home />
-              </Route>
-              <Route path="/login">
-                <Login />
-              </Route>
-              <Route path="/lobby">
-                <Lobby />
-              </Route>
-              <Route path="/game/:id">
-                <Game userId={this.state.userId} />
-              </Route>
-            </Switch>
-          </Container>
-        </div>
-      </Router>
+      <Provider store={store}>
+        <Router exact basename="/codename">
+          <div>
+            <GameAppBar />
+            <Container maxWidth="sm">
+              <Switch>
+                <Route exact path="/">
+                  <Home />
+                </Route>
+                <Route path="/login">
+                  <Login />
+                </Route>
+                <Route path="/register">
+                  <Register />
+                </Route>
+                <Route path="/lobby">
+                  <Lobby />
+                </Route>
+                <Route path="/game/:id">
+                  <Game userId={this.state.userId} />
+                </Route>
+              </Switch>
+            </Container>
+          </div>
+        </Router>
+      </Provider>
     );
   }
 }

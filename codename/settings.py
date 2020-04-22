@@ -148,6 +148,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'frontend/static/')
+
 # Logging
 LOGGING = {
     'version': 1,
@@ -164,6 +166,11 @@ LOGGING = {
             'level': 'INFO'
         },
         'backend': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'DEBUG',
+        },
+        'codename': {
             'handlers': ['console'],
             'propagate': False,
             'level': 'DEBUG',
