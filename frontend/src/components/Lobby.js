@@ -13,16 +13,16 @@ import { wsConnect } from "../actions/gameList";
 
 const Lobby = (props) => {
   useEffect(() => {
-    props.dispatch(wsConnect("games"));
+    props.dispatch(wsConnect());
   }, []);
 
   return (
     <List className="Lobby">
       {props.games.map((value) => (
         <Link
-          key={value.pk}
+          key={value.id}
           style={{ textDecoration: "none" }}
-          to={"/game/" + value.pk}
+          to={"/game/" + value.id}
         >
           <ListItem>
             <ListItemAvatar>

@@ -6,6 +6,8 @@ from knox.auth import TokenAuthentication
 from channels.db import database_sync_to_async
 from rest_framework.exceptions import AuthenticationFailed
 
+from channels.middleware import BaseMiddleware
+
 # import the logging library
 import logging
 
@@ -45,8 +47,8 @@ class TokenAuthMiddlewareInstance:
         except AuthenticationFailed:
             self.scope['user'] = AnonymousUser()
         inner = self.inner(self.scope)
-        return await inner(receive, send)
-
+        inner = await inner(receive, send)
+        return inner
 
 def TokenAuthMiddlewareStack(inner): return TokenAuthMiddleware(
     AuthMiddlewareStack(inner))

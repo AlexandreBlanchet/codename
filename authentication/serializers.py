@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+import logging
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 # User Serializer
 
 
@@ -21,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            validated_data['username'], validated_data['password'])
+            username=validated_data['username'], password=validated_data['password'])
 
         return user
 

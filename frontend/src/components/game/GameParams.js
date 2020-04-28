@@ -1,34 +1,50 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import { connect } from "react-redux";
+import { startGame } from "../../actions/game";
+import Team from "./Team";
 
 const useStyles = makeStyles({
-  root: {
-    minWidth: 275,
-  },
+  root: {},
   title: {
     fontSize: 14,
   },
+  teams: {
+    display: "flex",
+  },
 });
 
-
-export default function GameParams(props) {
+function GameParams(props) {
   const classes = useStyles();
 
   return (
     <Card className={classes.root}>
       <CardContent>
-        <Typography className={classes.title} color="textSecondary" gutterBottom>
+        <Typography color="textSecondary" gutterBottom>
           Welcome to the Codename game !
         </Typography>
+        <div className={classes.teams}>
+          <Team color="B" />
+          <Team color="R" />
+        </div>
       </CardContent>
+
       <CardActions>
-        <Button size="small" onClick={() => props.handleStart() }>Start</Button>
+        <Button size="small" onClick={() => props.dispatch(startGame())}>
+          Start
+        </Button>
       </CardActions>
     </Card>
   );
 }
+
+export default connect(function mapStateToProps(state) {
+  return {
+    teams: state.game.teams,
+  };
+})(GameParams);

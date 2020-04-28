@@ -4,6 +4,7 @@ import thunk from "redux-thunk";
 
 import rootReducer from "../reducers/index";
 import wsGameListMiddleware from "../middleware/wsGameListMiddleware";
+import wsGameMiddleware from "../middleware/wsGameMiddleware";
 
 var logger = createLogger({
   collapsed: true,
@@ -11,7 +12,7 @@ var logger = createLogger({
 
 var store = createStore(
   rootReducer,
-  applyMiddleware(thunk, wsGameListMiddleware, logger)
+  applyMiddleware(thunk, wsGameListMiddleware, wsGameMiddleware, logger)
 );
 
 export default store;

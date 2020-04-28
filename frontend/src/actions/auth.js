@@ -5,7 +5,7 @@ export const loadUser = () => (dispatch, getState) => {
   dispatch({ type: types.REQUEST_USER });
 
   axios
-    .get("../auth/user", tokenConfig(getState))
+    .get("http://192.168.1.18:80/auth/user", tokenConfig(getState))
     .then((res) => {
       dispatch({
         type: types.RESPONSE_USER_SUCCESS,
@@ -30,7 +30,7 @@ export const login = (username, password) => (dispatch) => {
   const body = JSON.stringify({ username, password });
 
   axios
-    .post("../auth/login", body, config)
+    .post("http://192.168.1.18:80/auth/login", body, config)
     .then((res) => {
       dispatch({
         type: types.RESPONSE_LOGIN_SUCCESS,
@@ -53,9 +53,8 @@ export const register = (username, password) => (dispatch) => {
     },
   };
   const body = JSON.stringify({ username, password });
-
   axios
-    .post("../auth/register", body, config)
+    .post("http://192.168.1.18:80/auth/register", body, config)
     .then((res) => {
       dispatch({
         type: types.RESPONSE_REGISTER_SUCCESS,
@@ -74,7 +73,7 @@ export const logout = () => (dispatch, getState) => {
   dispatch({ type: types.REQUEST_LOGOUT });
 
   axios
-    .post("../auth/logout", null, tokenConfig(getState))
+    .post("http://192.168.1.18:80/auth/logout", null, tokenConfig(getState))
     .then((res) => {
       dispatch({
         type: types.RESPONSE_LOGOUT_SUCCESS,
@@ -100,6 +99,5 @@ export const tokenConfig = (getState) => {
   if (token) {
     config.headers["Authorization"] = `Token ${token}`;
   }
-
   return config;
 };

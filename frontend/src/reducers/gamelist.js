@@ -3,42 +3,33 @@ import { actionTypes as types } from "../constants";
 const initialState = {
   gameList: [{ pk: 1, status: "P" }],
   isLoading: false,
-  gamesRetrieved: false,
-  socketOpened: false,
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case types.REQUEST_GAMES:
+    case types.REQUEST_GAMELIST:
       return {
         ...state,
         isLoading: true,
       };
-    case types.RESPONSE_GAMES_SUCCESS:
+    case types.RESPONSE_GAMELIST_SUCCESS:
       return {
         ...state,
         isLoading: false,
         gameList: action.data,
       };
-    case types.RECEIVE_NEW_GAME:
+    case types.RECEIVED_NEW_GAME:
       return {
         ...state,
-        gameList: [...gameList, action.data],
+        gameList: [action.data, ...state.gameList],
       };
-    case types.RESPONSE_LOGOUT_SUCCESS:
-      localStorage.removeItem("token");
+    case types.RECEIVED_GAME_UPDATE:
       return {
         ...state,
-        token: null,
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        errorMsg: { ...action.data, type: action.type },
-      };
-    case types.REMOVE_ERROR_MESSAGE:
-      return {
-        ...state,
-        errorMsg: {},
+        gameList: [
+          action.data,
+          ...state.gameList.filter((e) => e.pk !== action.data.pk),
+        ],
       };
 
     default:

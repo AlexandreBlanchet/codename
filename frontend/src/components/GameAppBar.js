@@ -60,7 +60,7 @@ function GameAppBar(props) {
           <Typography variant="h6" className={classes.title}>
             News
           </Typography>
-
+          {props.user ? props.user.username : ""}
           {props.isAuthenticated ? authLinks : guestLinks}
         </Toolbar>
       </AppBar>
@@ -71,5 +71,6 @@ function GameAppBar(props) {
 export default connect(function mapStateToProps(state) {
   return {
     isAuthenticated: state.auth.isAuthenticated,
+    user: state.auth.user,
   };
 })(GameAppBar);

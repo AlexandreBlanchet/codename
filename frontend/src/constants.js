@@ -20,6 +20,7 @@ export var actionTypes = keymirror({
   RESPONSE_GAMELIST_SUCCESS: null,
   RESPONSE_GAMELIST_FAIL: null,
   RECEIVED_NEW_GAME: null,
+  RECEIVED_GAMELIST_UPDATE: null,
 
   // Web Socket Game List
   REQUEST_WS_GAMELIST_OPEN: null,
@@ -28,4 +29,27 @@ export var actionTypes = keymirror({
   RECEIVED_WS_GAMELIST_CLOSED: null,
   RECEIVED_MESSAGE_FROM_WS_GAMELIST: null,
   SEND_MESSAGE_TO_WS_GAMELIST: null,
+
+  // Game messages
+  // may be some received are not necessary
+  REQUEST_GAME: null,
+  RESPONSE_GAME_SUCCESS: null,
+  RESPONSE_GAME_FAIL: null,
+  REQUEST_SUSCRIBE_GAME: null,
+  RESPONSE_SUSCRIBE_GAME_SUCCESS: null,
+  RESPONSE_SUSCRIBE_GAME_FAIL: null,
+  RECEIVED_GAME_UPDATE: null,
+  REQUEST_JOIN_TEAM: null,
+  REQUEST_START_GAME: null,
+  REQUEST_SUBMIT_WORD: null,
+  REQUEST_SELECT_CELL: null,
+  REQUEST_SUBMIT_CELL: null,
+
+  // Web Socket Game
+  REQUEST_WS_GAME_OPEN: null,
+  REQUEST_WS_GAME_CLOSE: null,
+  RESPONSE_WS_GAME_OPENED: null,
+  RECEIVED_WS_GAME_CLOSED: null,
+  RECEIVED_MESSAGE_FROM_WS_GAME: null,
+  SEND_MESSAGE_TO_WS_GAME: null,
 });

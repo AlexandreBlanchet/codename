@@ -10,6 +10,12 @@ TEAM_COLORS = (
 )
 BOARD_SIZE = 5
 
+STATUS = (
+    ('P', 'Preparation'),
+    ('S', 'Started'),
+    ('O', 'Over')
+)
+
 
 class Word(models.Model):
     """ 
@@ -35,6 +41,23 @@ class Cell(models.Model):
     found = models.BooleanField(default=False)
 
 
+class Team(models.Model):
+    """ 
+    Represent a team in the game. there either one or two teams 
+    """
+    game = models.ForeignKey(
+        'Game', on_delete=models.CASCADE, related_name="teams")
+    leader = models.OneToOneField(
+        'Player', on_delete=models.CASCADE, related_name='leader_team', null=True)
+    color = models.CharField(default='R', max_length=1, choices=TEAM_COLORS)
+
+    def get_not_leader_players(self):
+        players = list(self.players.all())
+        if self.leader in players:
+            players.remove(self.leader)
+        return players
+
+
 class Game(models.Model):
     """
     Describe any game and its parameters 
@@ -42,45 +65,146 @@ class Game(models.Model):
     status = models.CharField(default='P', max_length=1)
     date_created = models.DateTimeField(auto_now_add=True)
     last_active = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    def save(self, *args, **kwargs):
+        create_teams = False
+        if not self.pk:
+            create_teams = True
+        super(Game, self).save(*args, **kwargs)
+        if create_teams:
+            Team.objects.create(game=self, color="R")
+            Team.objects.create(game=self, color="B")
+
+    def join_team(self, user, team):
+        if self.status != 'P':
+            return
+        player = Player.objects.filter(user=user, game=self)
+        if player.count() == 1:
+            player = player[0]
+        else:
+            player = Player.objects.create(user=user, game=self)
+        team = Team.objects.get(game=self, color=team)
+        if player.team and player.team != team and player.team.leader == player:
+            player.team.leader = None
+            player.team.save()
+
+        player.team = team
+        player.save()
+
+        if team.players.count() == 1:
+            player.team.leader = player
+            player.team.save()
+
+        # Save game generate update object event for all consumers
+        self.save()
+        return player
+
+    def select_cell(self, user, cell_id):
+        if self.status != 'S':
+            return
+        player = Player.objects.filter(user=user, game=self)
+        if player.count() != 1:
+            return
+        player = player[0]
+
+        current_round = self.rounds.all().order_by("-pk")[0]
+        if player not in current_round.team.get_not_leader_players() or current_round.status != 'S':
+            return
+        # If one of the players has validated its choice we can't select another cell
+        for player in player.team.get_not_leader_players():
+            if player.valid_choice:
+                return
+
+        cell = Cell.objects.get(pk=cell_id)
+        if cell.found:
+            return
+
+        player.cell = cell
+        player.save()
+        # Save game generate update object event for all consumers
+        self.save()
+
+    def select_leader(self, player_id):
+        if self.status != 'P':
+            return
+        player = Player.objects.get(pk=player_id)
+        player.team.leader = player
+        player.team.save()
+        self.save()
+
+    def submit_word(self, user, word, number):
+        if self.status != 'S':
+            return
+        current_round = self.rounds.all().order_by("-pk")[0]
+        player = Player.objects.filter(user=user, game=self)
+        if player.count() != 1:
+            return
+        player = player[0]
+        if current_round.status != 'P' or current_round.team.leader != player:
+            return
+        current_round.word = word
+        current_round.number_of_cells = number
+        current_round.status = 'S'
+        current_round.save()
+        self.save()
+
+    def submit_cell(self, user):
+        if self.status != 'S':
+            return
+        current_round = self.rounds.all().order_by("-pk")[0]
+        player = Player.objects.filter(user=user, game=self)
+        if player.count() != 1:
+            return
+        player = player[0]
+        if current_round.status != 'S' or player not in current_round.team.get_not_leader_players():
+            return
+        cell_selected = None
+        for player in player.team.get_not_leader_players():
+            if not player.cell:
+                return
+            if not cell_selected:
+                cell_selected = player.cell
+            elif cell_selected != player.cell:
+                return
+        cell_selected.found = True
+        cell_selected.save()
+        current_round.found.add(cell_selected)
+
+        if cell_selected.color != current_round.team.color or current_round.found.count() == current_round.number_of_cells:
+            current_round.status = 'E'
+            current_round.save()
+            Round.objects.create(game=self, team=player.team)
+
+        for player in player.team.get_not_leader_players():
+            player.cell = None
+            player.valid_choice = False
+            player.save()
+
+        self.save()
 
     def check_end_of_game(self):
 
         for color in TEAM_COLORS:
-            if self.cell_set.filter(color=color[0]).count() == self.cell_set.filter(color=color[0], found=True).count():
+            if self.cells.filter(color=color[0]).count() == self.cells.filter(color=color[0], found=True).count():
                 status = color[0]
         self.save()
 
-    def start(self):
-        if self.status != 'P':
+    def start(self, user):
+        if self.status != 'P' or self.owner != user:
             return
         self.status = 'S'
-        self.save()
         words = list(Word.objects.all())
         random.shuffle(words)
-        teams = ['N']*10 + ['R']*8 + ['B']*8
+        teams = ['N']*10 + ['R']*8 + ['B']*7
         random.shuffle(teams)
         for i in range(BOARD_SIZE**2):
             Cell.objects.create(game=self, color=teams[i], word=words[i].word)
         # Creating first round with no data
-        team1 = Team.objects.create(
-            game=self, color='R', leader=self.player_set.all()[0])
-        if self.player_set.count() > 3:
-            Team.objects.create(game=self, color='B')
-        Round.objects.create(game=self, team=team1)
-
-    def get_last_round(self):
-        rounds = self.round_set.all()
-        return rounds[rounds.count()-1]
-
-
-class Team(models.Model):
-    """ 
-    Represent a team in the game. there either one or two teams 
-    """
-    game = models.ForeignKey('Game', on_delete=models.CASCADE)
-    leader = models.OneToOneField(
-        'Player', on_delete=models.CASCADE, related_name='leader_team')
-    color = models.CharField(default='R', max_length=1, choices=TEAM_COLORS)
+        # Red has one more cell then they start TODO make it random ?
+        team = Team.objects.get(game=self, color="R")
+        Round.objects.create(game=self, team=team)
+        self.save()
 
 
 class Player(models.Model):
@@ -93,7 +217,9 @@ class Player(models.Model):
         'Game', on_delete=models.CASCADE, related_name='players')
     team = models.ForeignKey(
         'Team', on_delete=models.CASCADE, null=True, related_name='players')
-    cell = models.ForeignKey('Cell', on_delete=models.CASCADE, null=True)
+    cell = models.ForeignKey(
+        'Cell', on_delete=models.CASCADE, null=True, related_name='players')
+    valid_choice = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('user', 'game',)
@@ -106,10 +232,11 @@ class Round(models.Model):
     The number of cells is the number of cells the team players have to find during the round
     We add in found the list of cells found as history of the game and allow to know if the round shoud end
     """
-    game = models.ForeignKey('Game', on_delete=models.CASCADE)
+    game = models.ForeignKey(
+        'Game', on_delete=models.CASCADE, related_name="rounds")
     word = models.CharField(max_length=50, null=True)
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
-    status = models.CharField(default='G', max_length=50)
+    status = models.CharField(default='P', max_length=50)
     number_of_cells = models.IntegerField(default=1)
     found = models.ManyToManyField('Cell')
 

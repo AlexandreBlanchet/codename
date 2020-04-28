@@ -7,6 +7,14 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
 class PlayerViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows player to be viewed or edited.
@@ -15,13 +23,22 @@ class PlayerViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PlayerSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class GameViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows game to be viewed or edited.
     """
-    queryset = Game.objects.all()
+    queryset = Game.objects.all().order_by("-pk")
     serializer_class = serializers.GameSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        game = Game(owner=request.user)
+        serializer = self.get_serializer(game, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 class RoundViewSet(viewsets.ModelViewSet):
     """
@@ -30,15 +47,3 @@ class RoundViewSet(viewsets.ModelViewSet):
     queryset = Round.objects.all()
     serializer_class = serializers.RoundSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-
-class LoginView(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, format=None):
-        content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
-        }
-        return Response(content)

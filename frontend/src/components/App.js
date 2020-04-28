@@ -12,6 +12,8 @@ import { Provider } from "react-redux";
 import store from "../stores/configureStore";
 import { loadUser } from "./../actions/auth";
 
+import PrivateRoute from "../common/PrivateRoute";
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -27,7 +29,6 @@ class App extends Component {
     gameId: null,
     loaded: false,
     placeholder: "Loading",
-    userId: JSON.parse(document.getElementById("user_id").textContent),
   };
   componentDidMount() {
     store.dispatch(loadUser());
@@ -39,7 +40,7 @@ class App extends Component {
         <Router exact basename="/codename">
           <div>
             <GameAppBar />
-            <Container maxWidth="sm">
+            <Container maxWidth="lg">
               <Switch>
                 <Route exact path="/">
                   <Home />
@@ -50,12 +51,16 @@ class App extends Component {
                 <Route path="/register">
                   <Register />
                 </Route>
-                <Route path="/lobby">
-                  <Lobby />
-                </Route>
-                <Route path="/game/:id">
-                  <Game userId={this.state.userId} />
-                </Route>
+                <PrivateRoute
+                  exact
+                  path="/game/:id"
+                  component={Game}
+                ></PrivateRoute>
+                <PrivateRoute
+                  exact
+                  path="/lobby"
+                  component={Lobby}
+                ></PrivateRoute>
               </Switch>
             </Container>
           </div>

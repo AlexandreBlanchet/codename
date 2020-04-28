@@ -1,65 +1,40 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import GameGrid from "./Grid";
 import RoundForm from "./RoundForm";
+import RoundDisplay from "./RoundDisplay";
 import GameParams from "./GameParams";
 import { useParams } from "react-router-dom";
-const URL = "ws://localhost:8000/ws/game";
+import { wsConnect } from "../../actions/game";
+import { connect } from "react-redux";
+import Grid from "@material-ui/core/Grid";
 
 const Game = (props) => {
-  const [game, setGame] = useState({ status: "P", cells: [], player_set: [] });
-  const [ws, setWs] = useState(new WebSocket(URL));
-
   let { id } = useParams();
 
-  ws.onopen = () => {
-    // on connecting, do nothing but log it to the console
-    console.log("connected");
+  useEffect(() => {
+    props.dispatch(wsConnect(id));
+  }, []);
 
-    ws.send(
-      JSON.stringify({ action: "subscribe_instance", pk: id, request_id: 4 })
-    );
-    ws.send(JSON.stringify({ action: "retrieve", pk: id, request_id: 1 }));
-  };
-
-  ws.onmessage = (evt) => {
-    // on receiving a message, add it to the list of messages
-    const message = JSON.parse(evt.data);
-    console.log(message);
-    if (message.action === "retrieve") {
-      setGame(message.data);
-      // TODO to be modified when we choose a game and we're not currently in it, we add our user to the player list of the game
-      if (
-        message.data.players.filter((player) => player.user == props.userId)
-          .length == 0
-      ) {
-        ws.send(
-          JSON.stringify({ action: "add_player", pk: id, request_id: 2 })
-        );
-      }
-    }
-    if (message.action === "update") {
-      setGame(message.data);
-    }
-  };
-
-  ws.onclose = () => {
-    console.log("disconnected");
-    // automatically try to reconnect on connection loss
-    setWs(new WebSocket(URL));
-  };
-
-  const handleStart = () => {
-    const message = { action: "start_game", pk: props.gameId, request_id: 2 };
-    ws.send(JSON.stringify(message));
-  };
+  if (props.currentRound) {
+    var round =
+      props.currentRound.status === "P" ? <RoundForm /> : <RoundDisplay />;
+  }
 
   return (
-    <div className="game">
-      <GameParams handleStart={handleStart} />
-      <RoundForm />
-      <GameGrid cells={game.cells} />
-    </div>
+    <Grid container justify="center" spacing={1}>
+      <Grid item xs={12} sm={6}>
+        <GameParams />
+        {round}
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <GameGrid />
+      </Grid>
+    </Grid>
   );
 };
 
-export default Game;
+export default connect(function mapStateToProps(state) {
+  return {
+    currentRound: state.game.currentRound,
+  };
+})(Game);

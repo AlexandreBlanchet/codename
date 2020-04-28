@@ -14,7 +14,6 @@ const socketMiddleware = () => {
   };
 
   const onMessage = (store) => (event) => {
-    console.log(event);
     store.dispatch({ type: types.RECEIVED_MESSAGE_FROM_WS_GAMELIST });
     const payload = JSON.parse(event.data);
     console.log(payload);
@@ -22,8 +21,23 @@ const socketMiddleware = () => {
       store.dispatch({ type: types.RESPONSE_GAMELIST_FAIL });
     }
     switch (payload.action) {
-      case "update_game_players":
-        store.dispatch(updateGame(payload.game, payload.current_player));
+      case "list":
+        store.dispatch({
+          type: types.RESPONSE_GAMELIST_SUCCESS,
+          data: payload.data,
+        });
+        break;
+      case "create":
+        store.dispatch({
+          type: types.RECEIVED_NEW_GAME,
+          data: payload.data,
+        });
+        break;
+      case "update":
+        store.dispatch({
+          type: types.RECEIVED_GAMELIST_UPDATE,
+          data: payload.data,
+        });
         break;
       default:
         break;

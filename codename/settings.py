@@ -27,7 +27,7 @@ SECRET_KEY = 'o2!rkrr75!auv4)*vdpqqnoh3$v*)x$nrupo0ufz)v$ius13tm'
 DEBUG = True
 
 
-ALLOWED_HOSTS: tp.List[str] = []
+ALLOWED_HOSTS: tp.List[str] = ['*']
 
 
 # Application definition
@@ -171,6 +171,11 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'codename': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'DEBUG',
+        },
+        'authentication': {
             'handlers': ['console'],
             'propagate': False,
             'level': 'DEBUG',

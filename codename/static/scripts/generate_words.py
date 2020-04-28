@@ -76,6 +76,11 @@ Footballeur
 Gorille
 """
 
-for word in words.split():
-    #Word.objects.create(word=word)
-    print(word)
+
+def create_words():
+    for word in words.split():
+        Word.objects.create(word=word)
+        print(word)
+
+
+create_words()

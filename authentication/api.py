@@ -2,6 +2,10 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 # Register API
 
