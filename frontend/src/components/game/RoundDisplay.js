@@ -26,11 +26,16 @@ const useStyles = makeStyles((theme) => ({
 
 function RoundDisplay(props) {
   const classes = useStyles();
-  const teamLeader = props.teams.filter(
+  const currentTeam = props.teams.filter(
     (team) => team.id == props.round.team
   )[0].leader.user;
 
-  if (teamLeader.username !== props.user.username) {
+  const isInTeam =
+    currentTeam.players.filter(
+      (player) => player.user.username === props.user.username
+    ).lenght > 0;
+
+  if (currentTeam.leader.user.username !== props.user.username && isInTeam) {
     var button = (
       <CardActions>
         <Button
