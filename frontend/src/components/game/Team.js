@@ -24,6 +24,11 @@ export const teamsName = {
   B: "Blue",
 };
 
+const colors = {
+  R: "indianred",
+  B: "dodgerblue",
+};
+
 function Team(props) {
   const classes = useStyles();
 
@@ -45,23 +50,23 @@ function Team(props) {
         </Button>
       </CardActions>
     );
-    if (props.status !== "P") {
-      var score = (
-        <Typography color="textSecondary" gutterBottom>
-          {
-            props.cells.filter(
-              (cell) => cell.color === props.team.color && cell.found === true
-            ).length
-          }{" "}
-          / {props.rounds[0].team === props.team.id ? "9" : "8"} cells found
-        </Typography>
-      );
-    }
+  }
+  if (props.status !== "P") {
+    var score = (
+      <Typography color="textSecondary" gutterBottom>
+        {
+          props.cells.filter(
+            (cell) => cell.color === props.team.color && cell.found === true
+          ).length
+        }{" "}
+        / {props.rounds[0].team === props.team.id ? "9" : "8"} tills found
+      </Typography>
+    );
   }
   return (
     <Card className={classes.root}>
       <CardContent>
-        <Typography color="textSecondary" gutterBottom>
+        <Typography gutterBottom style={{ color: colors[props.team.color] }}>
           Team {teamsName[props.team.color]}
         </Typography>
         {score}
@@ -71,6 +76,7 @@ function Team(props) {
               key={player.id}
               player={player}
               leader={props.team.leader}
+              color={props.team.color}
             />
           ))}
         </List>

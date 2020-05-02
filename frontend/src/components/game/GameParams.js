@@ -54,21 +54,23 @@ function GameParams(props) {
           (player) => player.user.username === props.user.username
         ).length === 1
     )[0];
-    const winnerTeam = props.teams.filter(
-      (team) => team.color === props.status
-    )[0];
-    const teamNbRounds = props.rounds.filter(
-      (round) => round.team === winnerTeam.id
-    );
+
     if (props.status === "O")
       var message =
         "GameOver ! You found the black till, you'll do bether next time ;)";
     else {
-      if (userTeam)
+      const winnerTeam = props.teams.filter(
+        (team) => team.color === props.status
+      )[0];
+      const teamNbRounds = props.rounds.filter(
+        (round) => round.team === winnerTeam.id
+      );
+      if (userTeam) {
         var message =
           userTeam.color === props.status
             ? "Yeah, you won :)"
             : "Too bad you lost :'(";
+      }
       var message2 =
         teamsName[props.status] +
         " team managed to find all its tills in " +
@@ -105,7 +107,7 @@ function GameParams(props) {
             ).length === 1
               ? " has "
               : " have "}
-            to find the tille
+            to find the till
             {props.currentRound.number_of_cells === 1 ? "" : "s"}
           </Typography>
         )}

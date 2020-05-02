@@ -12,6 +12,16 @@ const initialState = {
 
 export default function (state = initialState, action) {
   switch (action.type) {
+    case types.REQUEST_WS_GAME_OPEN:
+      return {
+        status: null,
+        cells: [],
+        teams: [],
+        isLoading: false,
+        rounds: [],
+        currentRound: null,
+        gameOwner: null,
+      };
     case types.REQUEST_GAME:
       return {
         ...state,

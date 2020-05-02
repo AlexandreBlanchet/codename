@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       margin: theme.spacing(1),
     },
+    marginTop: "20px",
   },
   elems: {
     display: "flex",
@@ -28,13 +29,12 @@ function RoundDisplay(props) {
   const classes = useStyles();
   const currentTeam = props.teams.filter(
     (team) => team.id == props.round.team
-  )[0].leader.user;
+  )[0];
 
   const isInTeam =
     currentTeam.players.filter(
       (player) => player.user.username === props.user.username
-    ).lenght > 0;
-
+    ).length > 0;
   if (currentTeam.leader.user.username !== props.user.username && isInTeam) {
     var button = (
       <CardActions>

@@ -21,6 +21,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const colors = {
+  R: "indianred",
+  B: "dodgerblue",
+};
+
 function Player(props) {
   const classes = useStyles();
   const username = props.player.user.username;
@@ -51,11 +56,11 @@ function Player(props) {
       <ListItemAvatar>
         {props.leader.id === props.player.id ? (
           <IconButton edge="end">
-            <RecordVoiceOverIcon />
+            <RecordVoiceOverIcon style={{ color: colors[props.color] }} />
           </IconButton>
         ) : (
           <IconButton onClick={handleClick} edge="end">
-            <PersonTwoToneIcon />
+            <PersonTwoToneIcon style={{ color: colors[props.color] }} />
           </IconButton>
         )}
       </ListItemAvatar>

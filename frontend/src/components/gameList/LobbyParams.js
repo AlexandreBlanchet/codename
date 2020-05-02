@@ -9,7 +9,9 @@ import { connect } from "react-redux";
 import { createNewGame } from "../../actions/gameList";
 
 const useStyles = makeStyles({
-  root: {},
+  root: {
+    marginTop: "20px",
+  },
   title: {
     fontSize: 14,
   },

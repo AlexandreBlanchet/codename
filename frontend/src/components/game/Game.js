@@ -33,7 +33,12 @@ const Game = (props) => {
   return (
     <>
       {props.status ? (
-        <Grid container justify="center" spacing={1}>
+        <Grid
+          container
+          justify="center"
+          spacing={3}
+          style={{ marginTop: "20px" }}
+        >
           <Grid item xs={12} sm={6}>
             <GameParams />
             {round}

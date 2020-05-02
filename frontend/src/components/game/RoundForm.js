@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       margin: theme.spacing(1),
     },
+    marginTop: "20px",
   },
   elems: {
     display: "flex",
@@ -63,11 +64,11 @@ const CustomSlider = withStyles({
 function RoundForm(props) {
   const classes = useStyles();
   const [word, setWord] = useState("");
-  const [number, setNumber] = useState(1);
+  const [number, setNumber] = useState(0);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    props.dispatch(submitWord(word, number));
+    if (number > 0) props.dispatch(submitWord(word, number));
   };
 
   return (
@@ -80,7 +81,7 @@ function RoundForm(props) {
         >
           Choose a word and the number of tiles to play with
         </Typography>
-        <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+        <form autoComplete="off" onSubmit={handleSubmit}>
           <div className={classes.elems}>
             <TextField
               required
@@ -100,7 +101,7 @@ function RoundForm(props) {
               aria-labelledby="discrete-slider-custom"
               step={1}
               valueLabelDisplay="on"
-              min={1}
+              min={0}
               max={9}
               onChange={(event, newValue) => setNumber(newValue)}
             />

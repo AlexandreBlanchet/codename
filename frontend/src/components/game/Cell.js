@@ -49,7 +49,9 @@ function GameCell(props) {
           style={{ backgroundColor: colors[props.cell.color] }}
         >
           <CardHeader
-            title={props.cell.found ? "" : props.cell.word}
+            title={
+              props.cell.found && props.status === "S" ? "" : props.cell.word
+            }
             titleTypographyProps={{ variant: "caption" }}
           ></CardHeader>
 
@@ -68,7 +70,11 @@ function GameCell(props) {
   );
 }
 
-export default connect()(GameCell);
+export default connect(function mapStateToProps(state) {
+  return {
+    status: state.game.status,
+  };
+})(GameCell);
 
 // Color Theme
 const colors = {
