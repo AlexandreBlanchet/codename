@@ -41,6 +41,10 @@ function Register(props) {
   const [matchPassword, setMatchPassword] = useState(true);
   const [helperText, setHelperText] = useState("");
 
+  if (props.isAuthenticated) {
+    return <Redirect to="/lobby" />;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (matchPassword) props.dispatch(actions.register(username, password));
