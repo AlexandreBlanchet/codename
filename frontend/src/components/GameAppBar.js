@@ -13,7 +13,7 @@ import { logout } from "../actions/auth";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  grow: {
     flexGrow: 1,
   },
   menuButton: {
@@ -88,13 +88,25 @@ function GameAppBar(props) {
   );
 
   return (
-    <div className={classes.root}>
+    <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             Codename
           </Typography>
-          <Typography variant="h6">
+          <Link
+            to="/lobby"
+            className={classes.link}
+            style={{ position: "absolute", marginLeft: "130px" }}
+          >
+            <Button color="inherit">Lobby</Button>
+          </Link>
+          <div className={classes.grow} />
+          <Typography
+            variant="h6"
+            className={classes.title}
+            style={{ position: "absolute", right: "130px" }}
+          >
             {props.user ? props.user.username : ""}
           </Typography>
           {props.isAuthenticated ? authLinks : guestLinks}
