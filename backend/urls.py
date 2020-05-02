@@ -6,7 +6,6 @@ from . import api
 router = routers.DefaultRouter()
 router.register(r'players', api.PlayerViewSet)
 router.register(r'games', api.GameViewSet)
-router.register(r'rounds', api.RoundViewSet)
 
 
 # Wire up our API using automatic URL routing.

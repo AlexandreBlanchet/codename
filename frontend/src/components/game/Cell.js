@@ -8,6 +8,7 @@ import Avatar from "@material-ui/core/Avatar";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import { connect } from "react-redux";
 import { selectCell } from "../../actions/game";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,30 +38,33 @@ function GameCell(props) {
   const classes = useStyles();
 
   return (
-    <Button
-      className={classes.button}
-      style={{ backgroundColor: colors[props.cell.color] }}
-      onClick={() => props.dispatch(selectCell(props.cell.id))}
-    >
-      <Card
+    <Tooltip disableHoverListener={!props.cell.found} title={props.cell.word}>
+      <Button
         className={classes.button}
         style={{ backgroundColor: colors[props.cell.color] }}
+        onClick={() => props.dispatch(selectCell(props.cell.id))}
       >
-        <CardHeader
-          title={props.cell.word}
-          titleTypographyProps={{ variant: "caption" }}
-        ></CardHeader>
-        <CardContent>
-          <AvatarGroup max={2} className={classes.avatarGroup}>
-            {props.cell.players.map((player) => (
-              <Avatar key={player.id} className={classes.avatar}>
-                {player.user.username.charAt(0)}
-              </Avatar>
-            ))}
-          </AvatarGroup>
-        </CardContent>
-      </Card>
-    </Button>
+        <Card
+          className={classes.button}
+          style={{ backgroundColor: colors[props.cell.color] }}
+        >
+          <CardHeader
+            title={props.cell.found ? "" : props.cell.word}
+            titleTypographyProps={{ variant: "caption" }}
+          ></CardHeader>
+
+          <CardContent>
+            <AvatarGroup max={2} className={classes.avatarGroup}>
+              {props.cell.players.map((player) => (
+                <Avatar key={player.id} className={classes.avatar}>
+                  {player.user.username.charAt(0)}
+                </Avatar>
+              ))}
+            </AvatarGroup>
+          </CardContent>
+        </Card>
+      </Button>
+    </Tooltip>
   );
 }
 
@@ -71,4 +75,5 @@ const colors = {
   R: "indianred",
   B: "dodgerblue",
   N: "lightgrey",
+  O: "dimgrey",
 };

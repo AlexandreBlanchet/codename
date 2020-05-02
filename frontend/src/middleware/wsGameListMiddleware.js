@@ -69,6 +69,7 @@ const socketMiddleware = () => {
         socket = null;
         return next(action);
       case types.REQUEST_GAMELIST:
+      case types.REQUEST_CREATE_NEW_GAME:
         socket.send(JSON.stringify(action.data));
         return next(action);
       default:

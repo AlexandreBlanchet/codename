@@ -101,11 +101,11 @@ function RoundForm(props) {
               step={1}
               valueLabelDisplay="on"
               min={1}
-              max={8}
+              max={9}
               onChange={(event, newValue) => setNumber(newValue)}
             />
           </div>
-          <Button color="primary" type="submit">
+          <Button color="primary" variant="contained" type="submit">
             Submit
           </Button>
         </form>

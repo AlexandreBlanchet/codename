@@ -21,6 +21,9 @@ export var actionTypes = keymirror({
   RESPONSE_GAMELIST_FAIL: null,
   RECEIVED_NEW_GAME: null,
   RECEIVED_GAMELIST_UPDATE: null,
+  REQUEST_CREATE_NEW_GAME: null,
+  RESPONSE_NEW_GAME_CREATE: null,
+  RESPONSE_NEW_GAME_FAIL: null,
 
   // Web Socket Game List
   REQUEST_WS_GAMELIST_OPEN: null,
@@ -40,10 +43,13 @@ export var actionTypes = keymirror({
   RESPONSE_SUSCRIBE_GAME_FAIL: null,
   RECEIVED_GAME_UPDATE: null,
   REQUEST_JOIN_TEAM: null,
+  REQUEST_SELECT_LEADER: null,
+  REQUEST_REMOVE_PLAYER: null,
   REQUEST_START_GAME: null,
   REQUEST_SUBMIT_WORD: null,
   REQUEST_SELECT_CELL: null,
   REQUEST_SUBMIT_CELL: null,
+  REQUEST_STOP_ROUND: null,
 
   // Web Socket Game
   REQUEST_WS_GAME_OPEN: null,

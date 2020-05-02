@@ -3,7 +3,7 @@ import { render } from "react-dom";
 import Container from "@material-ui/core/Container";
 import Game from "./game/Game";
 import GameAppBar from "./GameAppBar";
-import Lobby from "./Lobby";
+import Lobby from "./gameList/Lobby";
 import Home from "./Home";
 import Login from "./authentication/Login";
 import Register from "./authentication/Register";
@@ -26,7 +26,6 @@ import {
 
 class App extends Component {
   state = {
-    gameId: null,
     loaded: false,
     placeholder: "Loading",
   };
@@ -38,7 +37,12 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Router exact basename="/codename">
-          <div>
+          <div
+            style={{
+              background: "linear-gradient(to left,indianred, dodgerblue)",
+              minHeight: "100vh",
+            }}
+          >
             <GameAppBar />
             <Container maxWidth="lg">
               <Switch>

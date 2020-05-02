@@ -81,10 +81,13 @@ const socketMiddleware = () => {
         socket.send(JSON.stringify(action.data));
         return next(action);
       case types.REQUEST_JOIN_TEAM:
+      case types.REQUEST_SELECT_LEADER:
+      case types.REQUEST_REMOVE_PLAYER:
       case types.REQUEST_START_GAME:
       case types.REQUEST_SUBMIT_WORD:
       case types.REQUEST_SELECT_CELL:
       case types.REQUEST_SUBMIT_CELL:
+      case types.REQUEST_STOP_ROUND:
         socket.send(JSON.stringify({ ...action.data, pk: game_id }));
         return next(action);
       default:

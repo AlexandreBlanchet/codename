@@ -1,11 +1,13 @@
 import { actionTypes as types } from "../constants";
 
 const initialState = {
+  status: null,
   cells: [],
   teams: [],
   isLoading: false,
   rounds: [],
   currentRound: null,
+  gameOwner: null,
 };
 
 export default function (state = initialState, action) {
@@ -25,9 +27,11 @@ export default function (state = initialState, action) {
       return {
         ...state,
         isLoading: false,
+        status: action.data.status,
         cells: action.data.cells,
         teams: action.data.teams,
         rounds: action.data.rounds,
+        gameOwner: action.data.owner,
         currentRound,
       };
     default:

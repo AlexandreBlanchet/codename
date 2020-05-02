@@ -38,12 +38,3 @@ class GameViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-
-
-class RoundViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows round to be viewed or edited.
-    """
-    queryset = Round.objects.all()
-    serializer_class = serializers.RoundSerializer
-    permission_classes = [permissions.IsAuthenticated]

@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "10px",
     padding: "20px",
+    maxWidth: "500px",
+    marginLeft: "auto",
+    marginRight: "auto",
     "& > *": {
       margin: theme.spacing(2),
     },

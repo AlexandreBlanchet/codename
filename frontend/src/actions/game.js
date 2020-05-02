@@ -29,6 +29,20 @@ export const joinTeam = (team) => (dispatch) => {
   });
 };
 
+export const removePlayer = (player_id) => (dispatch) => {
+  dispatch({
+    type: types.REQUEST_REMOVE_PLAYER,
+    data: { action: "remove_player", player_id, request_id: 1 },
+  });
+};
+
+export const selectLeader = (player_id) => (dispatch) => {
+  dispatch({
+    type: types.REQUEST_SELECT_LEADER,
+    data: { action: "select_leader", player_id, request_id: 1 },
+  });
+};
+
 export const startGame = () => (dispatch) => {
   dispatch({
     type: types.REQUEST_START_GAME,
@@ -54,5 +68,12 @@ export const submitCell = () => (dispatch) => {
   dispatch({
     type: types.REQUEST_SUBMIT_CELL,
     data: { action: "submit_cell", request_id: 1 },
+  });
+};
+
+export const stopRound = () => (dispatch) => {
+  dispatch({
+    type: types.REQUEST_STOP_ROUND,
+    data: { action: "stop_round", request_id: 1 },
   });
 };

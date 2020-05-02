@@ -44,6 +44,19 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         return None, 200
 
     @action()
+    async def select_leader(self, pk=None, player_id=None, **kwargs):
+        game = await database_sync_to_async(self.get_object)(pk=pk)
+        await database_sync_to_async(game.select_leader)(player_id)
+        return None, 200
+
+    @action()
+    async def remove_player(self, pk=None, player_id=None, **kwargs):
+        game = await database_sync_to_async(self.get_object)(pk=pk)
+        user = self.scope['user']
+        await database_sync_to_async(game.remove_player)(user, player_id)
+        return None, 200
+
+    @action()
     async def submit_word(self, pk=None, word=None, number=None, **kwargs):
         game = await database_sync_to_async(self.get_object)(pk=pk)
         user = self.scope['user']
@@ -58,16 +71,17 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         return None, 200
 
     @action()
+    async def stop_round(self, pk=None, **kwargs):
+        game = await database_sync_to_async(self.get_object)(pk=pk)
+        user = self.scope['user']
+        await database_sync_to_async(game.stop_round)(user)
+        return None, 200
+
+    @action()
     async def select_cell(self, pk=None, cell_id=None, **kwargs):
         game = await database_sync_to_async(self.get_object)(pk=pk)
         user = self.scope['user']
         await database_sync_to_async(game.select_cell)(user, cell_id)
-        return None, 200
-
-    @action()
-    async def select_leader(self, pk=None, player_id=None, **kwargs):
-        game = await database_sync_to_async(self.get_object)(pk=pk)
-        await database_sync_to_async(game.select_leader)(player_id)
         return None, 200
 
     async def send_json(self, message):
@@ -85,21 +99,6 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
                 if team['leader'] and team['leader']['user'] and user.username == team['leader']['user']['username']:
                     return True
         return False
-
-    async def chat_message(self, event):
-        logger.info(event)
-
-
-class RoundConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
-    queryset = Round.objects.all()
-    serializer_class = serializers.RoundSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @action()
-    async def create(self, game_id=None, word='', number_of_cells=1, **kwargs):
-        game = await database_sync_to_async(Game.objects.get())(pk=game_id)
-
-# TODO filter only game that has been updated today
 
 
 class GamesConsumer(ListModelMixin, GenericAsyncAPIConsumer):
@@ -122,8 +121,8 @@ class GamesConsumer(ListModelMixin, GenericAsyncAPIConsumer):
 
     @action()
     def create(self, data, **kwargs):
-        user = self.scope['user']
-        serializer = self.get_serializer(data=data, action_kwargs=kwargs)
+        game = Game(owner=self.scope['user'])
+        serializer = serializers.GamesSerializer(game, data=data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, **kwargs)
-        return serializer.data, status.HTTP_201_CREATED
+        serializer.save()
+        return serializer.data, 200

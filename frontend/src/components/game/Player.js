@@ -9,6 +9,9 @@ import Avatar from "@material-ui/core/Avatar";
 import PersonTwoToneIcon from "@material-ui/icons/PersonTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 import RecordVoiceOverIcon from "@material-ui/icons/RecordVoiceOver";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import { connect } from "react-redux";
+import { removePlayer, selectLeader } from "../../actions/game";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,22 +21,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Player(props) {
+function Player(props) {
   const classes = useStyles();
   const username = props.player.user.username;
+  if (
+    (props.user.username === username ||
+      props.user.username == props.gameOwner.username) &&
+    props.status === "P"
+  ) {
+    var deleteButton = (
+      <ListItemSecondaryAction>
+        <IconButton
+          onClick={() => props.dispatch(removePlayer(props.player.id))}
+        >
+          <HighlightOffIcon />
+        </IconButton>
+      </ListItemSecondaryAction>
+    );
+  }
+
+  const handleClick = () => {
+    if (props.user.username == props.gameOwner.username) {
+      props.dispatch(selectLeader(props.player.id));
+    }
+  };
+
   return (
     <ListItem>
       <ListItemAvatar>
-        <Avatar>
-          <PersonTwoToneIcon />
-        </Avatar>
+        {props.leader.id === props.player.id ? (
+          <IconButton edge="end">
+            <RecordVoiceOverIcon />
+          </IconButton>
+        ) : (
+          <IconButton onClick={handleClick} edge="end">
+            <PersonTwoToneIcon />
+          </IconButton>
+        )}
       </ListItemAvatar>
-      <ListItemText primary={username} secondary="Jan 9, 2014" />
-      <ListItemSecondaryAction>
-        <IconButton edge="end" aria-label="comments">
-          {props.leader ? <RecordVoiceOverIcon /> : <PersonTwoToneIcon />}
-        </IconButton>
-      </ListItemSecondaryAction>
+      <ListItemText primary={username} />
+      {deleteButton}
     </ListItem>
   );
 }
+
+export default connect(function mapStateToProps(state) {
+  return {
+    status: state.game.status,
+    user: state.auth.user,
+    gameOwner: state.game.gameOwner,
+  };
+})(Player);

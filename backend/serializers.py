@@ -58,11 +58,4 @@ class GameSerializer(serializers.ModelSerializer):
 class GamesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
-        fields = ['id', 'status']
-
-
-class RoundSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Round
-        fields = ['id', 'game', 'word', 'number_of_cells']
-        depth = 1
+        fields = ['id', 'status', 'date_created']

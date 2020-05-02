@@ -5,7 +5,9 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import { connect } from "react-redux";
 import { logout } from "../actions/auth";
 import { Link } from "react-router-dom";
@@ -27,11 +29,51 @@ const useStyles = makeStyles((theme) => ({
 
 function GameAppBar(props) {
   const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    props.dispatch(logout());
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const authLinks = (
-    <Button color="inherit" onClick={() => props.dispatch(logout())}>
-      Logout
-    </Button>
+    <div>
+      <IconButton
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleMenu}
+        color="inherit"
+      >
+        <AccountCircle />
+      </IconButton>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
+    </div>
   );
 
   const guestLinks = (
@@ -49,18 +91,12 @@ function GameAppBar(props) {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h6" className={classes.title}>
-            News
+            Codename
           </Typography>
-          {props.user ? props.user.username : ""}
+          <Typography variant="h6">
+            {props.user ? props.user.username : ""}
+          </Typography>
           {props.isAuthenticated ? authLinks : guestLinks}
         </Toolbar>
       </AppBar>

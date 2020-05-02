@@ -14,3 +14,10 @@ export const retrieveGameList = () => (dispatch) => {
     data: { action: "list", request_id: 1 },
   });
 };
+
+export const createNewGame = () => (dispatch) => {
+  dispatch({
+    type: types.REQUEST_CREATE_NEW_GAME,
+    data: { action: "create", data: {}, request_id: 1 },
+  });
+};

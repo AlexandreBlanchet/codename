@@ -7,7 +7,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Typography from "@material-ui/core/Typography";
-import { submitCell, submitWord } from "../../actions/game";
+import { submitCell, stopRound } from "../../actions/game";
 import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,6 +26,32 @@ const useStyles = makeStyles((theme) => ({
 
 function RoundDisplay(props) {
   const classes = useStyles();
+  const teamLeader = props.teams.filter(
+    (team) => team.id == props.round.team
+  )[0].leader.user;
+
+  if (teamLeader.username !== props.user.username) {
+    var button = (
+      <CardActions>
+        <Button
+          color="primary"
+          variant="contained"
+          size="small"
+          onClick={() => props.dispatch(submitCell())}
+        >
+          Submit cell {props.round.found.length + 1}
+        </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          size="small"
+          onClick={() => props.dispatch(stopRound())}
+        >
+          Stop
+        </Button>
+      </CardActions>
+    );
+  }
 
   return (
     <Card className={classes.root}>
@@ -51,7 +77,7 @@ function RoundDisplay(props) {
           />
           <TextField
             id="outlined-full-width"
-            label="cells to find"
+            label="cells found"
             value={
               props.round.found.length + " / " + props.round.number_of_cells
             }
@@ -64,12 +90,7 @@ function RoundDisplay(props) {
           />
         </div>
       </CardContent>
-      <CardActions>
-        <Button size="small" onClick={() => props.dispatch(submitCell())}>
-          Submit cell 1
-        </Button>
-        <Button size="small">Stop</Button>
-      </CardActions>
+      {button}
     </Card>
   );
 }
@@ -77,5 +98,7 @@ function RoundDisplay(props) {
 export default connect(function mapStateToProps(state) {
   return {
     round: state.game.currentRound,
+    teams: state.game.teams,
+    user: state.auth.user,
   };
 })(RoundDisplay);

@@ -15,6 +15,9 @@ import { connect } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "10px",
+    maxWidth: "500px",
+    marginLeft: "auto",
+    marginRight: "auto",
     padding: "20px",
     "& > *": {
       margin: theme.spacing(2),

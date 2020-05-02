@@ -1,7 +1,7 @@
 import { actionTypes as types } from "../constants";
 
 const initialState = {
-  gameList: [{ pk: 1, status: "P" }],
+  gameList: [],
   isLoading: false,
 };
 
@@ -19,19 +19,14 @@ export default function (state = initialState, action) {
         gameList: action.data,
       };
     case types.RECEIVED_NEW_GAME:
-      return {
-        ...state,
-        gameList: [action.data, ...state.gameList],
-      };
     case types.RECEIVED_GAME_UPDATE:
       return {
         ...state,
         gameList: [
           action.data,
-          ...state.gameList.filter((e) => e.pk !== action.data.pk),
+          ...state.gameList.filter((e) => e.id !== action.data.id),
         ],
       };
-
     default:
       return state;
   }

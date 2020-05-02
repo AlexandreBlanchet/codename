@@ -48,7 +48,7 @@ class Team(models.Model):
     game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name="teams")
     leader = models.OneToOneField(
-        'Player', on_delete=models.CASCADE, related_name='leader_team', null=True)
+        'Player', on_delete=models.DO_NOTHING, related_name='leader_team', null=True)
     color = models.CharField(default='R', max_length=1, choices=TEAM_COLORS)
 
     def get_not_leader_players(self):
@@ -82,15 +82,18 @@ class Game(models.Model):
         player = Player.objects.filter(user=user, game=self)
         if player.count() == 1:
             player = player[0]
-        else:
-            player = Player.objects.create(user=user, game=self)
-        team = Team.objects.get(game=self, color=team)
-        if player.team and player.team != team and player.team.leader == player:
-            player.team.leader = None
-            player.team.save()
+            playerTeam = player.team
+            if playerTeam.leader == player:
+                playerTeam.leader = None
+                playerTeam.save()
+            player.delete()
 
-        player.team = team
-        player.save()
+            if playerTeam.players.count() > 0 and not playerTeam.leader:
+                playerTeam.leader = playerTeam.players.all()[0]
+                playerTeam.save()
+
+        team = Team.objects.get(game=self, color=team)
+        player = Player.objects.create(user=user, game=self, team=team)
 
         if team.players.count() == 1:
             player.team.leader = player
@@ -98,7 +101,30 @@ class Game(models.Model):
 
         # Save game generate update object event for all consumers
         self.save()
-        return player
+
+    def remove_player(self, user, player_id):
+        if self.status != 'P':
+            return
+        player = Player.objects.get(pk=player_id)
+        if user != self.owner and user != player.user:
+            return
+        team = player.team
+        if player.team.leader == player:
+            player.team.leader = None
+            player.team.save()
+        player.delete()
+
+        if team.players.count() > 0:
+            team.leader = team.players.all()[0]
+            team.save()
+        # Save game generate update object event for all consumers
+        self.save()
+
+    def get_the_other_team(self, team):
+        for elem in self.teams.all():
+            if elem != team:
+                return elem
+        return team
 
     def select_cell(self, user, cell_id):
         if self.status != 'S':
@@ -167,6 +193,9 @@ class Game(models.Model):
                 cell_selected = player.cell
             elif cell_selected != player.cell:
                 return
+
+        if cell_selected.found:
+            return
         cell_selected.found = True
         cell_selected.save()
         current_round.found.add(cell_selected)
@@ -174,7 +203,18 @@ class Game(models.Model):
         if cell_selected.color != current_round.team.color or current_round.found.count() == current_round.number_of_cells:
             current_round.status = 'E'
             current_round.save()
-            Round.objects.create(game=self, team=player.team)
+
+        # color O means Over, this is the cell that end the game the team who find the cell loose
+        if cell_selected.color == 'O':
+            if self.teams.count() == 1:
+                self.status = 'O'
+            else:
+                self.status = self.get_the_other_team(current_round.team)
+        elif self.cells.filter(color=current_round.team.color).count() == self.cells.filter(color=current_round.team.color, found=True).count():
+            self.status = current_round.team.color
+        elif current_round.status == 'E':
+            Round.objects.create(
+                game=self, team=self.get_the_other_team(current_round.team))
 
         for player in player.team.get_not_leader_players():
             player.cell = None
@@ -183,11 +223,23 @@ class Game(models.Model):
 
         self.save()
 
-    def check_end_of_game(self):
-
-        for color in TEAM_COLORS:
-            if self.cells.filter(color=color[0]).count() == self.cells.filter(color=color[0], found=True).count():
-                status = color[0]
+    def stop_round(self, user):
+        if self.status != 'S':
+            return
+        current_round = self.rounds.all().order_by("-pk")[0]
+        player = Player.objects.filter(user=user, game=self)
+        if player.count() != 1:
+            return
+        player = player[0]
+        if current_round.status != 'S' or player not in current_round.team.get_not_leader_players():
+            return
+        current_round.status = 'E'
+        current_round.save()
+        Round.objects.create(game=self, team=player.team)
+        for player in player.team.get_not_leader_players():
+            player.cell = None
+            player.valid_choice = False
+            player.save()
         self.save()
 
     def start(self, user):
@@ -196,14 +248,35 @@ class Game(models.Model):
         self.status = 'S'
         words = list(Word.objects.all())
         random.shuffle(words)
-        teams = ['N']*10 + ['R']*8 + ['B']*7
-        random.shuffle(teams)
+        for team in self.teams.all():
+            if team.players.count() == 1:
+                return
+        ok = False
+        for team in self.teams.all():
+            if team.players.count() > 1:
+                ok = True
+
+        if not ok:
+            return
+
+        for team in self.teams.all():
+            if team.players.count() == 0:
+                team.delete()
+
+        colors = ['N']*7 + ['R']*8 + ['B']*8 + ['O']
+        if random.choice([True, False]) and self.teams.count() == 2:
+            startingTeam = self.teams.all()[1]
+        else:
+            startingTeam = self.teams.all()[0]
+        colors.append(startingTeam.color)
+
+        random.shuffle(colors)
         for i in range(BOARD_SIZE**2):
-            Cell.objects.create(game=self, color=teams[i], word=words[i].word)
+            Cell.objects.create(game=self, color=colors[i], word=words[i].word)
         # Creating first round with no data
         # Red has one more cell then they start TODO make it random ?
-        team = Team.objects.get(game=self, color="R")
-        Round.objects.create(game=self, team=team)
+
+        Round.objects.create(game=self, team=startingTeam)
         self.save()
 
 
@@ -216,7 +289,7 @@ class Player(models.Model):
     game = models.ForeignKey(
         'Game', on_delete=models.CASCADE, related_name='players')
     team = models.ForeignKey(
-        'Team', on_delete=models.CASCADE, null=True, related_name='players')
+        'Team', on_delete=models.CASCADE, related_name='players')
     cell = models.ForeignKey(
         'Cell', on_delete=models.CASCADE, null=True, related_name='players')
     valid_choice = models.BooleanField(default=False)
