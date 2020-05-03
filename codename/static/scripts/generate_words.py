@@ -76,7 +76,7 @@ Mine
 Eclair
 Bureau
 Charge
-New York
+New-York
 Sardine
 Formule
 Bête

@@ -85,7 +85,7 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         return None, 200
 
     async def send_json(self, message):
-        if message['data'] and 'cells' in message['data']:
+        if message['data'] and 'cells' in message['data'] and message['data']['status'] == 'S':
             if not self.is_leader(self.scope['user'], message):
                 for cell in message['data']['cells']:
                     if not cell['found']:

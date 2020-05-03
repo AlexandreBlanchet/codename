@@ -175,11 +175,6 @@ class Game(models.Model):
         current_round.save()
         self.save()
 
-    def set_all_found(self):
-        for cell in self.cells.all():
-            cell.found = True
-            cell.save()
-
     def submit_cell(self, user):
         if self.status != 'S':
             return
@@ -214,11 +209,9 @@ class Game(models.Model):
             if self.teams.count() == 1:
                 self.status = 'O'
             else:
-                self.status = self.get_the_other_team(current_round.team)
-            self.set_all_found()
+                self.status = self.get_the_other_team(current_round.team).color
         elif self.cells.filter(color=current_round.team.color).count() == self.cells.filter(color=current_round.team.color, found=True).count():
             self.status = current_round.team.color
-            self.set_all_found()
         elif current_round.status == 'E':
             Round.objects.create(
                 game=self, team=self.get_the_other_team(current_round.team))
