@@ -9,21 +9,20 @@ import { connect } from "react-redux";
 import { startGame } from "../../actions/game";
 import Team from "./Team";
 import Paper from "@material-ui/core/Paper";
-import { teamsName } from "./Team";
+import { teamsName, colors } from "./Team";
 import GameOver from "./GameOver";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     boxShadow: "None",
     border: "1px solid grey",
   },
   title: {
     fontSize: 14,
   },
-  teams: {
-    display: "flex",
-  },
+  teams: {},
 }));
 
 function GameParams(props) {
@@ -57,7 +56,7 @@ function GameParams(props) {
 
     if (props.status === "O")
       var message =
-        "GameOver ! You found the black till, you'll do bether next time ;)";
+        "Perdu ! Vous avez trouvé la carte noir, vous ferez mieux la prochaine fois ;)";
     else {
       const winnerTeam = props.teams.filter(
         (team) => team.color === props.status
@@ -68,19 +67,20 @@ function GameParams(props) {
       if (userTeam) {
         var message =
           userTeam.color === props.status
-            ? "Yeah, you won :)"
-            : "Too bad you lost :'(";
+            ? "Yeah, Vous avez gagné :)"
+            : "Mince vous avez perdu :'(";
       }
       var message2 =
+        "L'équipe " +
         teamsName[props.status] +
-        " team managed to find all its tills in " +
+        " à réussi a trouver toutes ses cartes en " +
         teamNbRounds.length +
-        " rounds";
+        " manches";
     }
   }
 
   if (props.status === "P") {
-    var message = "Select the team you want to play with.";
+    var message = "Choisissez avec quelle équipe vous souhaitez jouer";
   }
   if (props.status === "S") {
     const currentTeam = props.teams.filter(
@@ -88,27 +88,31 @@ function GameParams(props) {
     )[0];
     var message = (
       <>
-        <Typography>It's the round number {props.rounds.length} </Typography>
-        <Typography color="textSecondary">
-          It's team {teamsName[currentTeam.color]} to play
+        <Typography>Tour numéro {props.rounds.length} </Typography>
+        <Typography style={{ color: colors[currentTeam.color] }}>
+          C'est à la team <b>{teamsName[currentTeam.color]}</b> de jouer
         </Typography>
         {props.currentRound.status === "P" ? (
           <Typography color="textSecondary">
-            {currentTeam.leader.user.username} has to propose a word
+            <b> {currentTeam.leader.user.username} </b> doit proposer un mot
+            permettant de trouver un maximum de cartes
           </Typography>
         ) : (
           <Typography color="textSecondary">
             {currentTeam.players
               .filter((player) => player.id != currentTeam.leader.id)
               .map((player) => player.user.username)
-              .join("and")}
+              .join(" et ")}
             {currentTeam.players.filter(
               (player) => player.id != currentTeam.leader.id
             ).length === 1
-              ? " has "
-              : " have "}
-            to find the till
-            {props.currentRound.number_of_cells === 1 ? "" : "s"}
+              ? " doit "
+              : " doivent "}
+            trouver
+            {props.currentRound.number_of_cells === 1
+              ? " la carte "
+              : " les cartes "}
+            pour le mot proposé
           </Typography>
         )}
       </>
@@ -120,12 +124,21 @@ function GameParams(props) {
       <GameOver status={props.status} message={message} />
       <Card>
         <CardContent>
-          <Typography gutterBottom>Welcome to the Codename game !</Typography>
-          <div className={classes.teams}>
+          {" "}
+          {props.status === "P" ? (
+            <Typography gutterBottom>
+              Partie créée par {props.gameOwner.username}
+            </Typography>
+          ) : (
+            <></>
+          )}
+          <Grid container>
             {props.teams.map((team) => (
-              <Team key={team.id} team={team} />
+              <Grid item key={team.id}>
+                <Team team={team} />
+              </Grid>
             ))}
-          </div>
+          </Grid>
           <Paper className={classes.paper}>
             <Typography>{message}</Typography>
             <Typography>{message2}</Typography>

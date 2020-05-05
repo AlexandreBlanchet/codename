@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
 import { createNewGame } from "../../actions/gameList";
+import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -23,11 +24,15 @@ const useStyles = makeStyles({
 function LobbyParams(props) {
   const classes = useStyles();
 
+  const createGame = () => {
+    props.dispatch(createNewGame());
+  };
+
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography color="textSecondary" gutterBottom>
-          Welcome to Codename !
+          Bienvenue sur Codename
         </Typography>
       </CardContent>
       <CardActions>
@@ -35,9 +40,9 @@ function LobbyParams(props) {
           color="primary"
           variant="contained"
           size="small"
-          onClick={() => props.dispatch(createNewGame())}
+          onClick={createGame}
         >
-          Create new game
+          Créer une nouvelle partie
         </Button>
       </CardActions>
     </Card>

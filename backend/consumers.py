@@ -67,8 +67,8 @@ class GameConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     async def submit_cell(self, pk=None, **kwargs):
         game = await database_sync_to_async(self.get_object)(pk=pk)
         user = self.scope['user']
-        await database_sync_to_async(game.submit_cell)(user)
-        return None, 200
+        status = await database_sync_to_async(game.submit_cell)(user)
+        return status
 
     @action()
     async def stop_round(self, pk=None, **kwargs):

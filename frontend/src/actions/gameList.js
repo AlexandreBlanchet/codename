@@ -3,7 +3,7 @@ import { actionTypes as types } from "../constants";
 // For now we directly pass the token value as the query_string -> should be cleaned
 export const wsConnect = () => (dispatch, getState) => {
   const token = getState().auth.token;
-  const url = `wss://${window.location.host}/ws/games?${token}`;
+  const url = `ws://${window.location.host}/ws/games?${token}`;
 
   dispatch({ type: types.REQUEST_WS_GAMELIST_OPEN, data: url });
 };

@@ -17,8 +17,9 @@ const socketMiddleware = () => {
 
   const onMessage = (store) => (event) => {
     const payload = JSON.parse(event.data);
+    console.log(payload);
     if (payload.response_status === 403 || payload.response_status === 404) {
-      store.dispatch({ type: types.RESPONSE_GAME_FAIL });
+      store.dispatch({ type: types.RESPONSE_GAME_FAIL, data: payload.data });
       return;
     }
     switch (payload.action) {
@@ -46,6 +47,11 @@ const socketMiddleware = () => {
           data: payload.data,
         });
         break;
+      case "submit_cell":
+        store.dispatch({
+          type: types.RESPONSE_SUBMIT_CELL_SUCCESS,
+          data: { message: payload.data, status: payload.response_status },
+        });
       default:
         break;
     }

@@ -12,19 +12,22 @@ import List from "@material-ui/core/List";
 
 const useStyles = makeStyles({
   root: {
-    width: "400px",
+    width: "200px",
     boxShadow: "None",
     border: "1px solid grey",
     margin: "10px",
   },
+  cardContent: {
+    paddingRight: "0px",
+  },
 });
 
 export const teamsName = {
-  R: "Red",
-  B: "Blue",
+  R: "rouge",
+  B: "bleue",
 };
 
-const colors = {
+export const colors = {
   R: "indianred",
   B: "dodgerblue",
 };
@@ -45,8 +48,9 @@ function Team(props) {
           color="primary"
           variant="outlined"
           onClick={() => props.dispatch(joinTeam(props.team.color))}
+          style={{ marginLeft: "auto", marginRight: "auto" }}
         >
-          Join team
+          Rejoindre
         </Button>
       </CardActions>
     );
@@ -59,15 +63,15 @@ function Team(props) {
             (cell) => cell.color === props.team.color && cell.found === true
           ).length
         }{" "}
-        / {props.rounds[0].team === props.team.id ? "9" : "8"} tills found
+        / {props.rounds[0].team === props.team.id ? "9" : "8"} Cartes trouvées
       </Typography>
     );
   }
   return (
     <Card className={classes.root}>
-      <CardContent>
+      <CardContent className={classes.cardContent}>
         <Typography gutterBottom style={{ color: colors[props.team.color] }}>
-          Team {teamsName[props.team.color]}
+          Equipe {teamsName[props.team.color]}
         </Typography>
         {score}
         <List dense={true}>

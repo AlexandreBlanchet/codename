@@ -8,6 +8,7 @@ import { wsConnect } from "../../actions/game";
 import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import AlertMessage from "./Alert";
 
 const Game = (props) => {
   let { id } = useParams();
@@ -32,20 +33,26 @@ const Game = (props) => {
 
   return (
     <>
+      <AlertMessage />
       {props.status ? (
         <Grid
           container
           justify="center"
-          spacing={3}
-          style={{ marginTop: "20px" }}
+          spacing={2}
+          style={{ marginTop: "10px" }}
         >
           <Grid item xs={12} sm={6}>
             <GameParams />
             {round}
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <GameGrid />
-          </Grid>
+
+          {props.status !== "P" ? (
+            <Grid item xs={12} sm={6}>
+              <GameGrid />{" "}
+            </Grid>
+          ) : (
+            <></>
+          )}
         </Grid>
       ) : (
         <LinearProgress />

@@ -13,21 +13,12 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { connect } from "react-redux";
 import { removePlayer, selectLeader } from "../../actions/game";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
-
 const colors = {
   R: "indianred",
   B: "dodgerblue",
 };
 
 function Player(props) {
-  const classes = useStyles();
   const username = props.player.user.username;
   if (
     (props.user.username === username ||
@@ -52,7 +43,7 @@ function Player(props) {
   };
 
   return (
-    <ListItem>
+    <ListItem style={{ paddingLeft: "0px", height: "30px" }}>
       <ListItemAvatar>
         {props.leader.id === props.player.id ? (
           <IconButton edge="end">

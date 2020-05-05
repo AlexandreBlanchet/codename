@@ -9,6 +9,7 @@ import CardActions from "@material-ui/core/CardActions";
 import Typography from "@material-ui/core/Typography";
 import { submitCell, stopRound } from "../../actions/game";
 import { connect } from "react-redux";
+import { teamsName } from "./Team";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,12 +67,13 @@ function RoundDisplay(props) {
           color="textSecondary"
           gutterBottom
         >
-          The following word has been proposed for the Red team
+          Le mot suivant à été proposé pour l'équipe{" "}
+          {teamsName[currentTeam.color]}
         </Typography>
         <div className={classes.elems}>
           <TextField
             id="outlined-full-width"
-            label="Given Word"
+            label="Mot proposé"
             defaultValue={props.round.word}
             fullWidth
             margin="normal"
@@ -82,7 +84,7 @@ function RoundDisplay(props) {
           />
           <TextField
             id="outlined-full-width"
-            label="cells found"
+            label="Cartes trouvées"
             value={
               props.round.found.length + " / " + props.round.number_of_cells
             }

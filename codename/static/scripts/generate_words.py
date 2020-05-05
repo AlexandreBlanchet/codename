@@ -88,7 +88,7 @@ Langue
 Ensemble
 Prêt
 Gorge
-Poêl
+Poêle
 Grain
 Grue
 Facteur
@@ -157,7 +157,7 @@ Ligne
 Front
 Commerce
 Barre
-Vaiseau
+Vaisseau
 Figure
 Coupe
 Lunettes

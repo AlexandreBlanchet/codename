@@ -14,9 +14,12 @@ const socketMiddleware = () => {
   };
 
   const onMessage = (store) => (event) => {
-    store.dispatch({ type: types.RECEIVED_MESSAGE_FROM_WS_GAMELIST });
     const payload = JSON.parse(event.data);
-    console.log(payload);
+    store.dispatch({
+      type: types.RECEIVED_MESSAGE_FROM_WS_GAMELIST,
+      data: payload,
+    });
+
     if (payload.response_status === 403) {
       store.dispatch({ type: types.RESPONSE_GAMELIST_FAIL });
     }
@@ -32,6 +35,12 @@ const socketMiddleware = () => {
           type: types.RECEIVED_NEW_GAME,
           data: payload.data,
         });
+        if (payload.response_status === 200) {
+          store.dispatch({
+            type: types.RESPONSE_NEW_GAME_CREATE,
+            data: payload.data,
+          });
+        }
         break;
       case "update":
         store.dispatch({

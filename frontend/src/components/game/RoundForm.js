@@ -6,6 +6,8 @@ import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 import { submitWord } from "../../actions/game";
 import { connect } from "react-redux";
 
@@ -65,53 +67,65 @@ function RoundForm(props) {
   const classes = useStyles();
   const [word, setWord] = useState("");
   const [number, setNumber] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (number > 0) props.dispatch(submitWord(word, number));
+    else setOpen(true);
   };
 
+  const handleClose = (event) => {
+    setOpen(false);
+  };
   return (
-    <Card className={classes.root}>
-      <CardContent>
-        <Typography
-          className={classes.title}
-          color="textSecondary"
-          gutterBottom
-        >
-          Choose a word and the number of tiles to play with
-        </Typography>
-        <form autoComplete="off" onSubmit={handleSubmit}>
-          <div className={classes.elems}>
-            <TextField
-              required
-              id="outlined-full-width"
-              label="Word"
-              value={word}
-              onChange={(event) => setWord(event.target.value)}
-              fullWidth
-              margin="normal"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              variant="outlined"
-            />
-            <CustomSlider
-              value={number}
-              aria-labelledby="discrete-slider-custom"
-              step={1}
-              valueLabelDisplay="on"
-              min={0}
-              max={9}
-              onChange={(event, newValue) => setNumber(newValue)}
-            />
-          </div>
-          <Button color="primary" variant="contained" type="submit">
-            Submit
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Vous devez renseigner un nombre de cartes à trouver pour ce mot.
+        </Alert>
+      </Snackbar>
+      <Card className={classes.root}>
+        <CardContent>
+          <Typography
+            className={classes.title}
+            color="textSecondary"
+            gutterBottom
+          >
+            Choisissez un mot et le nombre de cartes qu'il permet de trouver.
+          </Typography>
+          <form autoComplete="off" onSubmit={handleSubmit}>
+            <div className={classes.elems}>
+              <TextField
+                required
+                id="outlined-full-width"
+                label="Mot à proposer"
+                value={word}
+                onChange={(event) => setWord(event.target.value)}
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+              />
+              <CustomSlider
+                value={number}
+                aria-labelledby="discrete-slider-custom"
+                step={1}
+                valueLabelDisplay="on"
+                min={0}
+                max={9}
+                onChange={(event, newValue) => setNumber(newValue)}
+              />
+            </div>
+            <Button color="primary" variant="contained" type="submit">
+              Proposer ce mot
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

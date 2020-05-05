@@ -129,16 +129,16 @@ class Game(models.Model):
     def select_cell(self, user, cell_id):
         if self.status != 'S':
             return
-        player = Player.objects.filter(user=user, game=self)
-        if player.count() != 1:
+        currentPlayer = Player.objects.filter(user=user, game=self)
+        if currentPlayer.count() != 1:
             return
-        player = player[0]
+        currentPlayer = currentPlayer[0]
 
         current_round = self.rounds.all().order_by("-pk")[0]
-        if player not in current_round.team.get_not_leader_players() or current_round.status != 'S':
+        if currentPlayer not in current_round.team.get_not_leader_players() or current_round.status != 'S':
             return
         # If one of the players has validated its choice we can't select another cell
-        for player in player.team.get_not_leader_players():
+        for player in currentPlayer.team.get_not_leader_players():
             if player.valid_choice:
                 return
 
@@ -146,8 +146,8 @@ class Game(models.Model):
         if cell.found:
             return
 
-        player.cell = cell
-        player.save()
+        currentPlayer.cell = cell
+        currentPlayer.save()
         # Save game generate update object event for all consumers
         self.save()
 
@@ -177,25 +177,31 @@ class Game(models.Model):
 
     def submit_cell(self, user):
         if self.status != 'S':
-            return
+            return ("La partie n'est pas dans l'état démarrée", 403)
         current_round = self.rounds.all().order_by("-pk")[0]
-        player = Player.objects.filter(user=user, game=self)
-        if player.count() != 1:
-            return
-        player = player[0]
-        if current_round.status != 'S' or player not in current_round.team.get_not_leader_players():
-            return
+        currentPlayer = Player.objects.filter(user=user, game=self)
+        if currentPlayer.count() != 1:
+            return ("L'utilisateur n'existe pas", 403)
+        currentPlayer = currentPlayer[0]
+        if current_round.status != 'S':
+            return ("La le round n'est pas dans l'état démarrée", 403)
+        if currentPlayer not in current_round.team.get_not_leader_players():
+            return ("Ce n'est pas a votre tour de proposer une carte", 403)
         cell_selected = None
-        for player in player.team.get_not_leader_players():
+        for player in currentPlayer.team.get_not_leader_players():
             if not player.cell:
-                return
+                if user != player.user:
+                    return (player.user.username + " n'a pas selectionné de carte", 403)
+                else:
+                    return ("Vous n'avez pas selectionné de carte", 403)
             if not cell_selected:
                 cell_selected = player.cell
             elif cell_selected != player.cell:
-                return
+                return ("tous les joueurs n'ont pas selectionnés la même carte", 403)
 
         if cell_selected.found:
-            return
+            return ("La carte selectionnée à déjà été trouvée", 403)
+
         cell_selected.found = True
         cell_selected.save()
         current_round.found.add(cell_selected)
@@ -222,6 +228,10 @@ class Game(models.Model):
             player.save()
 
         self.save()
+        if cell_selected.color != current_round.team.color:
+            return ("Mince vous êtes tombé sur une mauvaise carte !", 201)
+        else:
+            return ("Bravo vous avez trouvé une carte de votre équipe !", 200)
 
     def stop_round(self, user):
         if self.status != 'S':

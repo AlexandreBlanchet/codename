@@ -17,6 +17,50 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Game(props) {
   const classes = useStyles();
+  const date = new Date(props.dateCreated);
+  const currentDate = new Date();
+  const timestampDiff = currentDate.getTime() - date.getTime();
+  const days = Math.floor(timestampDiff / 1000 / 24 / 60 / 60);
+  const hours = Math.floor(
+    (timestampDiff - days * 1000 * 24 * 60 * 60) / 1000 / 60 / 60
+  );
+  const minutes = Math.floor(
+    (timestampDiff - days * 1000 * 24 * 60 * 60 - hours * 1000 * 60 * 60) /
+      1000 /
+      60
+  );
+
+  var dateMessage = "";
+
+  if (days) {
+    dateMessage += " " + days + " jour";
+    if (days > 1) dateMessage += "s";
+  }
+
+  if (hours) {
+    dateMessage += " " + hours + "  heure";
+    if (hours > 1) dateMessage += "s";
+  }
+
+  if (minutes) {
+    dateMessage += " " + minutes + "  minute";
+    if (minutes > 1) dateMessage += "s";
+  }
+
+  dateMessage = dateMessage == "" ? "A l'instant" : "Il y a " + dateMessage;
+
+  if (props.owner) {
+    var owner = (
+      <Typography>
+        Créée par <b>{props.owner.username}</b>
+      </Typography>
+    );
+  }
+
+  if (props.status === "P") var status = "Partie en recherche de joueurs";
+  else if (props.status === "S") var status = "Partie commencée";
+  else var status = "Partie terminée";
+
   return (
     <Card className={classes.root}>
       <ListItem>
@@ -25,15 +69,8 @@ export default function Game(props) {
             <GridOnIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText
-          primary={
-            props.status === "P" ? "Game is in preparation" : "Game has started"
-          }
-          secondary={props.dateCreated}
-        />
-        <Typography>
-          {props.status === "P" ? "Join the game" : "Watch the game"}
-        </Typography>
+        <ListItemText primary={status} secondary={dateMessage} />
+        {owner}
       </ListItem>
     </Card>
   );

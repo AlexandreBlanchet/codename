@@ -4,10 +4,10 @@ const initialState = {
   status: null,
   cells: [],
   teams: [],
-  isLoading: false,
   rounds: [],
   currentRound: null,
   gameOwner: null,
+  message: null,
 };
 
 export default function (state = initialState, action) {
@@ -17,7 +17,6 @@ export default function (state = initialState, action) {
         status: null,
         cells: [],
         teams: [],
-        isLoading: false,
         rounds: [],
         currentRound: null,
         gameOwner: null,
@@ -25,7 +24,6 @@ export default function (state = initialState, action) {
     case types.REQUEST_GAME:
       return {
         ...state,
-        isLoading: true,
       };
     case types.RESPONSE_GAME_SUCCESS:
     case types.RECEIVED_GAME_UPDATE:
@@ -36,13 +34,24 @@ export default function (state = initialState, action) {
       }
       return {
         ...state,
-        isLoading: false,
         status: action.data.status,
         cells: action.data.cells,
         teams: action.data.teams,
         rounds: action.data.rounds,
         gameOwner: action.data.owner,
         currentRound,
+      };
+    case types.RESPONSE_GAME_FAIL:
+      return {
+        ...state,
+        message: { message: action.data, type: "error" },
+      };
+    case types.RESPONSE_SUBMIT_CELL_SUCCESS:
+      if (action.data.status == 200) var type = "success";
+      else var type = "warning";
+      return {
+        ...state,
+        message: { message: action.data.message, type },
       };
     default:
       return state;
