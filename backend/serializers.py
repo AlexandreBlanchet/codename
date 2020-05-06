@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Player, Game, Round, Cell, Team
+from .models import Player, Game, Round, Cell, Team, Round
 
 # import the logging library
 import logging
@@ -39,15 +39,25 @@ class CellSerializer(serializers.ModelSerializer):
         depth = 2
 
 
+class RoundSerializer(serializers.ModelSerializer):
+    team = TeamSerializer(required=False)
+    found = CellSerializer(many=True, required=False)
+
+    class Meta:
+        model = Round
+        fields = ['id', 'word', 'status', 'team', 'number_of_cells', 'found']
+
+
 class GameSerializer(serializers.ModelSerializer):
     teams = TeamSerializer(many=True, required=False)
     owner = UserSerialize(required=False)
     cells = CellSerializer(many=True, required=False)
+    rounds = RoundSerializer(many=True, required=False)
 
     class Meta:
         model = Game
         fields = ['id', 'status', 'cells', 'teams', 'owner', 'rounds']
-        depth = 1
+        depth = 3
 
     def create(self, validated_data):
         logger.info(validated_data)

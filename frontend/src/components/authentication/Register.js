@@ -98,7 +98,7 @@ function Register(props) {
   return (
     <Card className={classes.root}>
       <Typography className={classes.title} variant="h4">
-        Register
+        S'enregistrer
       </Typography>
       {alert}
       <form className={classes.form} autoComplete="off" onSubmit={handleSubmit}>
@@ -106,7 +106,7 @@ function Register(props) {
           autoFocus
           required
           id="username-input"
-          label="Username"
+          label="Login"
           autoComplete="username"
           variant="outlined"
           value={username}
@@ -117,7 +117,7 @@ function Register(props) {
           required
           error={!matchPassword}
           id="password-input"
-          label="Password"
+          label="Mot de passe"
           type="password"
           variant="outlined"
           name="password"
@@ -129,7 +129,7 @@ function Register(props) {
           required
           error={!matchPassword}
           id="password-input-retype"
-          label="Confirm password"
+          label="Confirmer le mot de passe"
           type="password"
           variant="outlined"
           name="password2"
@@ -139,11 +139,11 @@ function Register(props) {
         />
         <div>
           <Button variant="contained" color="primary" type="submit">
-            Register
+            S'enregistrer
           </Button>
         </div>
         <Typography>
-          Already have an account? <Link to="/login">Login</Link>
+          Vous avez déjà un compte ? <Link to="/login">Connexion</Link>
         </Typography>
       </form>
     </Card>

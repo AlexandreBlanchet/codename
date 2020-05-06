@@ -7,7 +7,6 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
 import { createNewGame } from "../../actions/gameList";
-import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {

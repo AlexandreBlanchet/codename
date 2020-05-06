@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import AlertMessage from "./Alert";
+import RoundsHistory from "./RoundsHistory";
 
 const Game = (props) => {
   let { id } = useParams();
@@ -18,12 +19,9 @@ const Game = (props) => {
   }, []);
 
   if (props.currentRound && props.status === "S") {
-    const teamLeader = props.teams.filter(
-      (team) => team.id == props.currentRound.team
-    )[0].leader.user;
     var round =
       props.currentRound.status === "P" ? (
-        props.user.username === teamLeader.username ? (
+        props.user.username === props.currentRound.team.leader.user.username ? (
           <RoundForm />
         ) : null
       ) : (
@@ -47,9 +45,14 @@ const Game = (props) => {
           </Grid>
 
           {props.status !== "P" ? (
-            <Grid item xs={12} sm={6}>
-              <GameGrid />{" "}
-            </Grid>
+            <>
+              <Grid item xs={12} sm={6}>
+                <GameGrid />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <RoundsHistory />
+              </Grid>
+            </>
           ) : (
             <></>
           )}

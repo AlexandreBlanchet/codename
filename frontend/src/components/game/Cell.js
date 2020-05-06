@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     color: theme.palette.text.secondary,
     width: 105,
-    height: 105,
+    height: 94,
   },
   avatar: {
     width: theme.spacing(3),
@@ -49,6 +49,7 @@ function GameCell(props) {
           style={{ backgroundColor: colors[props.cell.color] }}
         >
           <CardHeader
+            style={{ padding: "16px", paddingBottom: "0px" }}
             title={
               props.cell.found && props.status === "S" ? "" : props.cell.word
             }

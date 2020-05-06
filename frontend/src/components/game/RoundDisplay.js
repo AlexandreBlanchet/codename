@@ -28,15 +28,15 @@ const useStyles = makeStyles((theme) => ({
 
 function RoundDisplay(props) {
   const classes = useStyles();
-  const currentTeam = props.teams.filter(
-    (team) => team.id == props.round.team
-  )[0];
 
   const isInTeam =
-    currentTeam.players.filter(
+    props.round.team.players.filter(
       (player) => player.user.username === props.user.username
     ).length > 0;
-  if (currentTeam.leader.user.username !== props.user.username && isInTeam) {
+  if (
+    props.round.team.leader.user.username !== props.user.username &&
+    isInTeam
+  ) {
     var button = (
       <CardActions>
         <Button
@@ -45,7 +45,8 @@ function RoundDisplay(props) {
           size="small"
           onClick={() => props.dispatch(submitCell())}
         >
-          Submit cell {props.round.found.length + 1}
+          Proposer la {props.round.found.length + 1}{" "}
+          {props.round.found.length === 0 ? "ere" : "eme"} carte
         </Button>
         <Button
           color="primary"
@@ -53,7 +54,7 @@ function RoundDisplay(props) {
           size="small"
           onClick={() => props.dispatch(stopRound())}
         >
-          Stop
+          Arrêter le tour
         </Button>
       </CardActions>
     );
@@ -68,7 +69,7 @@ function RoundDisplay(props) {
           gutterBottom
         >
           Le mot suivant à été proposé pour l'équipe{" "}
-          {teamsName[currentTeam.color]}
+          {teamsName[props.round.team.color]}
         </Typography>
         <div className={classes.elems}>
           <TextField

@@ -17,7 +17,6 @@ const socketMiddleware = () => {
 
   const onMessage = (store) => (event) => {
     const payload = JSON.parse(event.data);
-    console.log(payload);
     if (payload.response_status === 403 || payload.response_status === 404) {
       store.dispatch({ type: types.RESPONSE_GAME_FAIL, data: payload.data });
       return;

@@ -71,7 +71,7 @@ function GameAppBar(props) {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
       </Menu>
     </div>
   );
@@ -79,10 +79,10 @@ function GameAppBar(props) {
   const guestLinks = (
     <>
       <Link to="/login" className={classes.link}>
-        <Button color="inherit">Login</Button>
+        <Button color="inherit">Connexion</Button>
       </Link>
       <Link to="/register" className={classes.link}>
-        <Button color="inherit">Register</Button>
+        <Button color="inherit">S'enregistrer</Button>
       </Link>
     </>
   );
@@ -99,7 +99,7 @@ function GameAppBar(props) {
             className={classes.link}
             style={{ position: "absolute", marginLeft: "130px" }}
           >
-            <Button color="inherit">Lobby</Button>
+            <Button color="inherit">Parties</Button>
           </Link>
           <div className={classes.grow} />
           <Typography

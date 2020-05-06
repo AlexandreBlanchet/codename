@@ -12,7 +12,7 @@ import List from "@material-ui/core/List";
 
 const useStyles = makeStyles({
   root: {
-    width: "200px",
+    width: "260px",
     boxShadow: "None",
     border: "1px solid grey",
     margin: "10px",
@@ -25,11 +25,15 @@ const useStyles = makeStyles({
 export const teamsName = {
   R: "rouge",
   B: "bleue",
+  N: "neutre",
+  O: "",
 };
 
 export const colors = {
   R: "indianred",
   B: "dodgerblue",
+  N: "lightgrey",
+  O: "dimgrey",
 };
 
 function Team(props) {
@@ -63,7 +67,8 @@ function Team(props) {
             (cell) => cell.color === props.team.color && cell.found === true
           ).length
         }{" "}
-        / {props.rounds[0].team === props.team.id ? "9" : "8"} Cartes trouvées
+        / {props.rounds[0].team.id === props.team.id ? "9" : "8"} Cartes
+        trouvées
       </Typography>
     );
   }

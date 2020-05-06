@@ -61,8 +61,11 @@ function GameParams(props) {
       const winnerTeam = props.teams.filter(
         (team) => team.color === props.status
       )[0];
+      const loserTeam = props.teams.filter(
+        (team) => team.color !== props.status
+      )[0];
       const teamNbRounds = props.rounds.filter(
-        (round) => round.team === winnerTeam.id
+        (round) => round.team.id === winnerTeam.id
       );
       if (userTeam) {
         var message =
@@ -70,41 +73,57 @@ function GameParams(props) {
             ? "Yeah, Vous avez gagné :)"
             : "Mince vous avez perdu :'(";
       }
-      var message2 =
-        "L'équipe " +
-        teamsName[props.status] +
-        " à réussi a trouver toutes ses cartes en " +
-        teamNbRounds.length +
-        " manches";
+      if (
+        props.cells.filter((cell) => cell.color === winnerTeam.color).length ===
+        props.cells.filter(
+          (cell) => cell.color === winnerTeam.color && cell.found == true
+        ).length
+      ) {
+        var message2 =
+          "L'équipe " +
+          teamsName[props.status] +
+          " a réussi à trouver toutes ses cartes en " +
+          teamNbRounds.length +
+          " manches";
+      } else {
+        var message2 =
+          "La carte noir à été trouvée par l'équipe " +
+          teamsName[loserTeam.color];
+      }
     }
   }
 
   if (props.status === "P") {
     var message = "Choisissez avec quelle équipe vous souhaitez jouer";
+    var message2 =
+      "L'hôte de la partie peut choisir qui fait les propositions de mot dans chaque équipe en selectionnant la personne concernée";
   }
   if (props.status === "S") {
-    const currentTeam = props.teams.filter(
-      (team) => team.id === props.currentRound.team
-    )[0];
     var message = (
       <>
-        <Typography>Tour numéro {props.rounds.length} </Typography>
-        <Typography style={{ color: colors[currentTeam.color] }}>
-          C'est à la team <b>{teamsName[currentTeam.color]}</b> de jouer
+        <Typography>
+          Tour numéro <b>{props.rounds.length}</b>
+        </Typography>
+        <Typography style={{ color: colors[props.currentRound.team.color] }}>
+          C'est à la team <b>{teamsName[props.currentRound.team.color]}</b> de
+          jouer
         </Typography>
         {props.currentRound.status === "P" ? (
           <Typography color="textSecondary">
-            <b> {currentTeam.leader.user.username} </b> doit proposer un mot
-            permettant de trouver un maximum de cartes
+            <b> {props.currentRound.team.leader.user.username} </b> doit
+            proposer un mot permettant de trouver un maximum de cartes{" "}
+            {teamsName[props.currentRound.team.color]}
           </Typography>
         ) : (
           <Typography color="textSecondary">
-            {currentTeam.players
-              .filter((player) => player.id != currentTeam.leader.id)
+            {props.currentRound.team.players
+              .filter(
+                (player) => player.id != props.currentRound.team.leader.id
+              )
               .map((player) => player.user.username)
               .join(" et ")}
-            {currentTeam.players.filter(
-              (player) => player.id != currentTeam.leader.id
+            {props.currentRound.team.players.filter(
+              (player) => player.id != props.currentRound.team.leader.id
             ).length === 1
               ? " doit "
               : " doivent "}
@@ -140,8 +159,10 @@ function GameParams(props) {
             ))}
           </Grid>
           <Paper className={classes.paper}>
-            <Typography>{message}</Typography>
-            <Typography>{message2}</Typography>
+            <Typography gutterBottom>{message}</Typography>
+            <Typography color="textSecondary" gutterBottom>
+              {message2}
+            </Typography>
           </Paper>
         </CardContent>
         {startButton}
@@ -153,6 +174,7 @@ function GameParams(props) {
 export default connect(function mapStateToProps(state) {
   return {
     rounds: state.game.rounds,
+    cells: state.game.cells,
     currentRound: state.game.currentRound,
     teams: state.game.teams,
     status: state.game.status,

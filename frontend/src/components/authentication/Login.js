@@ -65,7 +65,7 @@ function Login(props) {
   return (
     <Card className={classes.root}>
       <Typography className={classes.title} variant="h4">
-        Login
+        Connexion
       </Typography>
       {alert}
       <form className={classes.form} autoComplete="off" onSubmit={handleSubmit}>
@@ -73,7 +73,7 @@ function Login(props) {
           autoFocus
           required
           id="username-input"
-          label="Username"
+          label="Login"
           autoComplete="username"
           variant="outlined"
           value={username}
@@ -83,7 +83,7 @@ function Login(props) {
         <TextField
           required
           id="password-input"
-          label="Password"
+          label="Mot de passe"
           type="password"
           autoComplete="current-password"
           variant="outlined"
@@ -97,7 +97,7 @@ function Login(props) {
           </Button>
         </div>
         <Typography>
-          Don't have an account? <Link to="/register">Register</Link>
+          Vous n'avez pas de compte ? <Link to="/register">S'enregistrer</Link>
         </Typography>
       </form>
     </Card>

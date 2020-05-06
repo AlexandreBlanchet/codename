@@ -30,10 +30,10 @@ function GameOver(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Game is Over !!!"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{props.message}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {props.message}
+            {"La partie est fini"}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
