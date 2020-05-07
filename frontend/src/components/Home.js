@@ -31,7 +31,7 @@ export default function SimplePaper() {
     <div className={classes.root}>
       <Paper elevation={3} className={classes.paper}>
         <Typography variant="h4" gutterBottom>
-          bienvenue sur NameCode !
+          Bienvenue sur NameCode !
         </Typography>
         <Typography variant="h6" gutterBottom>
           {" "}
