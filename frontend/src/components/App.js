@@ -36,11 +36,11 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <Router exact basename="/codename">
+        <Router exact basename="/namecode">
           <div
             style={{
               background: "linear-gradient(to left,indianred, dodgerblue)",
-              minHeight: "100vh",
+              minHeight: "140vh",
             }}
           >
             <GameAppBar />

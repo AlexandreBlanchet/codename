@@ -76,7 +76,7 @@ function GameParams(props) {
       if (
         props.cells.filter((cell) => cell.color === winnerTeam.color).length ===
         props.cells.filter(
-          (cell) => cell.color === winnerTeam.color && cell.found == true
+          (cell) => cell.color === winnerTeam.color && cell.found === true
         ).length
       ) {
         var message2 =
@@ -87,7 +87,7 @@ function GameParams(props) {
           " manches";
       } else {
         var message2 =
-          "La carte noir à été trouvée par l'équipe " +
+          "La carte noire à été trouvée par l'équipe " +
           teamsName[loserTeam.color];
       }
     }
@@ -96,7 +96,7 @@ function GameParams(props) {
   if (props.status === "P") {
     var message = "Choisissez avec quelle équipe vous souhaitez jouer";
     var message2 =
-      "L'hôte de la partie peut choisir qui fait les propositions de mot dans chaque équipe en selectionnant la personne concernée";
+      "L'hôte de la partie peut choisir qui fait les propositions de mots dans chaque équipe en sélectionnant la personne concernée";
   }
   if (props.status === "S") {
     var message = (
@@ -105,14 +105,14 @@ function GameParams(props) {
           Tour numéro <b>{props.rounds.length}</b>
         </Typography>
         <Typography style={{ color: colors[props.currentRound.team.color] }}>
-          C'est à la team <b>{teamsName[props.currentRound.team.color]}</b> de
+          C'est à l'équipe <b>{teamsName[props.currentRound.team.color]}</b> de
           jouer
         </Typography>
         {props.currentRound.status === "P" ? (
           <Typography color="textSecondary">
             <b> {props.currentRound.team.leader.user.username} </b> doit
             proposer un mot permettant de trouver un maximum de cartes{" "}
-            {teamsName[props.currentRound.team.color]}
+            {teamsName[props.currentRound.team.color]}s
           </Typography>
         ) : (
           <Typography color="textSecondary">
@@ -145,7 +145,7 @@ function GameParams(props) {
         <CardContent>
           {" "}
           {props.status === "P" ? (
-            <Typography gutterBottom>
+            <Typography variant="h6" gutterBottom>
               Partie créée par {props.gameOwner.username}
             </Typography>
           ) : (

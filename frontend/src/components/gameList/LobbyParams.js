@@ -30,8 +30,16 @@ function LobbyParams(props) {
   return (
     <Card className={classes.root}>
       <CardContent>
+        <Typography variant="h5" gutterBottom>
+          Bienvenue sur NameCode
+        </Typography>
+        <Typography gutterBottom>Ci-dessous la liste des parties</Typography>
         <Typography color="textSecondary" gutterBottom>
-          Bienvenue sur Codename
+          Vous pouvez rejoindre une partie en attente de joueurs ou créer votre
+          propre partie !
+        </Typography>
+        <Typography color="textSecondary">
+          Vous pouvez également regarder une partie déjà en cours :)
         </Typography>
       </CardContent>
       <CardActions>
@@ -40,6 +48,7 @@ function LobbyParams(props) {
           variant="contained"
           size="small"
           onClick={createGame}
+          style={{ margin: "10px" }}
         >
           Créer une nouvelle partie
         </Button>

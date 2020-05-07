@@ -31,54 +31,50 @@ const useStyles = makeStyles((theme) => ({
 
 function RoundsHistory(props) {
   const classes = useStyles();
+  const rounds = props.rounds.reverse().filter((round) => round.status !== "P");
 
   return (
     <>
-      {props.rounds
-        .reverse()
-        .filter((round) => round.status !== "P")
-        .map((round, index) => {
-          return (
-            <Card key={round.id} className={classes.card}>
-              <CardContent>
-                <Typography gutterBottom>
-                  <b>Tour {props.rounds.length - index} :</b>{" "}
-                  <i style={{ color: colors[round.team.color] }}>
-                    Equipe {teamsName[round.team.color]}
-                  </i>
-                </Typography>
-                <Grid container>
-                  <Grid item xs={12} sm={6}>
-                    <Paper className={classes.paper}>
-                      <Typography>
-                        Mot proposé : <b>{round.word}</b>{" "}
-                      </Typography>
-                      <Typography>
-                        Nombres de cartes à trouver :{" "}
-                        <b>{round.number_of_cells}</b>
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Paper className={classes.paper}>
-                      <Typography>Cartes trouvées :</Typography>
-                      {round.found.map((cell) => (
-                        <Typography key={cell.id}>
-                          <b style={{ color: colors[cell.color] }}>
-                            {cell.word}
-                          </b>{" "}
-                          <i style={{ color: colors[cell.color] }}>
-                            (équipe {teamsName[cell.color]})
-                          </i>
-                        </Typography>
-                      ))}
-                    </Paper>
-                  </Grid>
+      {rounds.map((round, index) => {
+        return (
+          <Card key={round.id} className={classes.card}>
+            <CardContent>
+              <Typography gutterBottom>
+                <b>Tour {rounds.length - index} :</b>{" "}
+                <i style={{ color: colors[round.team.color] }}>
+                  Equipe {teamsName[round.team.color]}
+                </i>
+              </Typography>
+              <Grid container>
+                <Grid item xs={12} sm={6}>
+                  <Paper className={classes.paper}>
+                    <Typography>
+                      Mot proposé : <b>{round.word}</b>{" "}
+                    </Typography>
+                    <Typography>
+                      Nombre de cartes à trouver :{" "}
+                      <b>{round.number_of_cells}</b>
+                    </Typography>
+                  </Paper>
                 </Grid>
-              </CardContent>
-            </Card>
-          );
-        })}
+                <Grid item xs={12} sm={6}>
+                  <Paper className={classes.paper}>
+                    <Typography>Cartes trouvées :</Typography>
+                    {round.found.map((cell) => (
+                      <Typography key={cell.id}>
+                        <b style={{ color: colors[cell.color] }}>{cell.word}</b>{" "}
+                        <i style={{ color: colors[cell.color] }}>
+                          (équipe {teamsName[cell.color]})
+                        </i>
+                      </Typography>
+                    ))}
+                  </Paper>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        );
+      })}
     </>
   );
 }

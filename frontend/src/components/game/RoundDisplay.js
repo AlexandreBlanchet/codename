@@ -68,7 +68,7 @@ function RoundDisplay(props) {
           color="textSecondary"
           gutterBottom
         >
-          Le mot suivant à été proposé pour l'équipe{" "}
+          Le mot suivant a été proposé pour l'équipe{" "}
           {teamsName[props.round.team.color]}
         </Typography>
         <div className={classes.elems}>

@@ -91,9 +91,9 @@ function GameAppBar(props) {
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            Codename
-          </Typography>
+          <Link to="/" className={classes.link}>
+            <Button color="inherit">NameCode</Button>
+          </Link>
           <Link
             to="/lobby"
             className={classes.link}

@@ -58,7 +58,7 @@ export default function Game(props) {
   }
 
   if (props.status === "P") var status = "Partie en recherche de joueurs";
-  else if (props.status === "S") var status = "Partie commencée";
+  else if (props.status === "S") var status = "Partie en cours";
   else var status = "Partie terminée";
 
   return (

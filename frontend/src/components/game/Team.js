@@ -26,7 +26,7 @@ export const teamsName = {
   R: "rouge",
   B: "bleue",
   N: "neutre",
-  O: "",
+  O: "noire",
 };
 
 export const colors = {
