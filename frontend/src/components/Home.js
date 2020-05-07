@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "10px",
     marginLeft: "auto",
     marginRight: "auto",
-    border: "1px solid grey",
+    border: "2px solid grey",
   },
   media: {
     height: "600px",
@@ -54,7 +54,7 @@ export default function SimplePaper() {
         <CardMedia
           className={classes.media}
           image="/static/frontend/images/namecode3.png"
-          title="Contemplative Reptile"
+          title="Exemple de partie"
         />
       </Card>
     </div>
