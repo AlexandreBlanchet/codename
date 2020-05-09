@@ -95,7 +95,6 @@ Facteur
 Jet
 Mousse
 Moule
-Barre
 Kiwi
 Pièce
 Fin
@@ -205,7 +204,7 @@ Liquide
 
 
 def create_words():
-    for word in words.split():
+    for word in set(words.split()):
         Word.objects.create(word=word)
         print(word)
 

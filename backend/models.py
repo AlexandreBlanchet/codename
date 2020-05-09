@@ -218,6 +218,8 @@ class Game(models.Model):
                 self.status = self.get_the_other_team(current_round.team).color
         elif self.cells.filter(color=current_round.team.color).count() == self.cells.filter(color=current_round.team.color, found=True).count():
             self.status = current_round.team.color
+        elif self.cells.filter(color=self.get_the_other_team(current_round.team).color).count() == self.cells.filter(color=self.get_the_other_team(current_round.team).color, found=True).count():
+            self.status = self.get_the_other_team(current_round.team).color
         elif current_round.status == 'E':
             Round.objects.create(
                 game=self, team=self.get_the_other_team(current_round.team))
